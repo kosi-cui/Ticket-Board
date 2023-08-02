@@ -1,27 +1,31 @@
 from FreshAPI.api import API
 from .fresh_parser import Parser
-import json, os
+import json, os, webbrowser
 
-class Fresh_CUI:
+class CUI_Client:
     """
     Main class for the CUI FreshService client
     """
     api = None
     parser = None
-    agent_dict = None  
+    agent_dict = None
+    WEBSITE_PATH = os.path.join(os.sep, os.path.dirname(os.path.realpath(__file__)), ".website", "GUI.html")
 
 
     def __init__(self) -> None:
         self.api = API()
         self.parser = Parser(self.api)
         self.agent_dict = self.ParseAgents()
+        self.OpenWebsite()
         pass
 
-    #region APICalls
-
-    
-
-    #endregion
+    def OpenWebsite(self) -> None:
+        """
+        Opens the website
+        """
+        url = "file:///" + self.WEBSITE_PATH
+        webbrowser.open(url, new=2)
+        pass
 
 
     #region ParserCalls
