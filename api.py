@@ -1,10 +1,10 @@
-#Import the freshdesk python API. Documentation here: https://bitbucket.org/egym-com/freshservice-wrapper/src/master/
-import requests, os
+import requests, os, json
 
 API_KEY = -1
 URL = -1
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
 CONFIG_PATH = os.path.join(os.sep, CURR_DIR, ".credentials", "conf")
+
 
 def InitialSetup():
     if not os.path.exists(os.path.join(os.sep, CURR_DIR, ".credentials")):
@@ -43,6 +43,9 @@ def ReadConfig():
 
 def GetTicketInfo(ticket_id, args = []):
     # Create the URL for the specified ticket + args
+
+    # The responder_id is the person who currently has the ticket.
+    # TODO: Add a way to get the name of the responder_id
     url = URL + str(ticket_id)
     if(len(args) > 0):
         url +="?include="
@@ -53,7 +56,20 @@ def GetTicketInfo(ticket_id, args = []):
     response = requests.get(url, auth = (API_KEY, "X"))
     return response
 
+
+def GetTicketTasks(ticket_id):
+    # Status 3 == Closed, Status 1 == Unresolved
+    url = URL + str(ticket_id) + "/tasks"
+    response = requests.get(url, auth = (API_KEY, "X"))
+    return response
+
+
+
 if __name__ == "__main__":
     InitialSetup()
-    t = GetTicketInfo(20985)
-    print(t.json())
+    t = GetTicketTasks(21467)
+    with open ("testTasks.json", 'w') as f:
+        json.dump(t.json(), f, indent = 4)
+    t = GetTicketInfo(21467)
+    with open ("testTicket.json", 'w') as f:
+        json.dump(t.json(), f, indent = 4)
