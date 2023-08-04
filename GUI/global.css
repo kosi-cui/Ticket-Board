@@ -1,0 +1,16 @@
+body {
+  margin: 0;
+  line-height: normal;
+}
+
+:root {
+  /* fonts */
+  --font-gandhi-sans: "Gandhi Sans";
+
+  /* font sizes */
+  --font-size-mini: 15px;
+
+  /* Colors */
+  --color-black: #000;
+  --color-lightgray: #cfd7df;
+}

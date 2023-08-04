@@ -1,6 +1,6 @@
 from FreshAPI.api import API
 from .fresh_parser import Parser
-import json, os, webbrowser
+import json, os, eel, screeninfo
 
 class CUI_Client:
     """
@@ -23,9 +23,16 @@ class CUI_Client:
         """
         Opens the website
         """
-        url = "file:///" + self.WEBSITE_PATH
-        webbrowser.open(url, new=2)
+        url = "file://" + self.WEBSITE_PATH
+        eel.init('GUI')
+        eel.start("GUI.html")
         pass
+
+
+    # Anything in the eel.expose is available to the website
+    @eel.expose
+    def function1(data1, data2, data3):
+        print(data1, data2, data3)
 
 
     #region ParserCalls
