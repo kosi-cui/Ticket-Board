@@ -1,8 +1,10 @@
 from FreshAPI.api import API
 from .fresh_parser import Parser
-import json, os, eel, screeninfo
+import json, os, eel, threading, sys
+global RUNNING
 
 class CUI_Client:
+    global RUNNING
     """
     Main class for the CUI FreshService client
     """
@@ -10,31 +12,40 @@ class CUI_Client:
     parser = None
     agent_dict = None
     WEBSITE_PATH = os.path.join(os.sep, os.path.dirname(os.path.realpath(__file__)), ".website", "GUI.html")
-
+    gui_thread = None
+    api_thread = None
+    RUNNING = True
 
     def __init__(self) -> None:
         self.api = API()
         self.parser = Parser(self.api)
         self.agent_dict = self.ParseAgents()
-        self.OpenWebsite()
+        self.gui_thread = threading.Thread(target=self.OpenWebsite)
+        self.gui_thread.start()
         pass
 
+    def __del__(self) -> None:
+        self.gui_thread.join()
+        pass
     def OpenWebsite(self) -> None:
         """
         Opens the website
         """
         url = "file://" + self.WEBSITE_PATH
-        eel.init('GUI')
-        eel.start("GUI.html")
+        eel.init('web')
+        eel.start("index.html", close_callback=CloseWebsite)
         pass
+
 
 
     # Anything in the eel.expose is available to the website
     @eel.expose
-    def function1(data1, data2, data3):
-        print(data1, data2, data3)
+    def close_python(*args):
+        global RUNNING
+        print("Closing Python Server")
+        os._exit(0)
 
-
+    
     #region ParserCalls
 
     def ParseAgents(self) -> dict:
@@ -91,7 +102,17 @@ class CUI_Client:
         """
         Saves all current reimage tickets to the .tickets folder
         """
+        print("Saving Reimage Tickets")
         reimage_tickets = self.api.GetTicketIDs("status:2 AND tag:\'Reimage\'")
         for ticket_id in reimage_tickets:
             self.SaveTicket(ticket_id)
     #endregion
+
+
+
+def CloseWebsite(page, sockets_still_open):
+    """
+    Closes the website & stops the python code
+    """
+    print("Closing python backend")
+    os._exit(0)
