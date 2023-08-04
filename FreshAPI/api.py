@@ -70,7 +70,6 @@ class API():
         Gets the ticket IDs for a given query
         """
         url = self.URL + f"/tickets/filter?query=\"{query}\""
-        print(url)
         response = requests.get(url, auth = (self.API_KEY, "X"))
         ticket_ids = []
         for ticket in response.json()["tickets"]:
