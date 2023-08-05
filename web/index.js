@@ -87,14 +87,3 @@ function addTableRow(rowData)
     row.insertCell(3).innerHTML = rowData["creation_date"];
     row.insertCell(4).innerHTML = rowData["assigned_to"];
 }
-
-document.onreadystatechange = function () {
-    if(document.readyState !== "complete")
-    {
-      eel.Eel_Print("Loading the page");  
-    }
-    else
-    {
-        eel.Eel_Print("Page loaded");
-    }
-};

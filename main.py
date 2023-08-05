@@ -1,8 +1,7 @@
 from CUI_Client.cui_client import CUI_Client
-import eel, os, threading
+import eel, os 
 
 #region GUI_Setup
-
 
 def CloseWebsite(page, sockets_still_open):
     """
@@ -30,8 +29,6 @@ if __name__ == "__main__":
     # Department ID = 19000169805
     fresh = CUI_Client()
     eel.init('web')
-    #gui_thread = threading.Thread(target=OpenWebsite)
-    #gui_thread.start()
 
     #NOTE: Add all functions that need to be exposed to the website here
     eel_functions = [
