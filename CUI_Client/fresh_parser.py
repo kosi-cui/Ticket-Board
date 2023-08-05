@@ -9,7 +9,10 @@ class Parser():
     TICKET_FOLDER = ".tickets"
 
     def __init__(self, api_obj: API) -> None:
-        self.TICKET_FOLDER = os.path.join(os.sep, api_obj.CURR_DIR, self.TICKET_FOLDER)
+        temp_dir = api_obj.CURR_DIR.replace("FreshAPI", "|")
+        main_dir = f"{temp_dir.split('|')[0]}web"
+        print(main_dir)
+        self.TICKET_FOLDER = os.path.join(os.sep, main_dir, self.TICKET_FOLDER)
         if not os.path.exists(self.TICKET_FOLDER):
             os.mkdir(self.TICKET_FOLDER)
             with open (os.path.join(self.TICKET_FOLDER, "README"), 'w') as f:

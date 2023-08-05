@@ -3,29 +3,25 @@ import eel, os, threading
 
 #region GUI_Setup
 
-def OpenWebsite():
-    """
-    Opens the website
-    """
-    eel.init('web')
-    eel.start("index.html", close_callback=CloseWebsite)
 
 def CloseWebsite(page, sockets_still_open):
     """
     Closes the website
     """
-    print("Closing python backend")
+    print("[PY] Closing python backend")
     os._exit(0)
 
-#NOTE: Make sure to add any functions that you want to be able to call from the website to this function
-#      -- Naming convention: Eel_<function_name>
-def BindEelFunctions(client: CUI_Client):
+
+def BindEelFunctions(eel_functions):
     """
     Binds the eel functions to the CUI_Client. This is done so that the eel GUI can call specific functions in the CUI_Client
     """
-    #NOTE: use eel.expose(client.<function_name>) to expose a function to the website
     #NOTE: To call the function in the website, use eel.<function_name>()
-    eel.expose(client.Eel_ExposeTickets)
+    for function in eel_functions:
+        print(f"[PY] Exposing {function.__name__} -> ./web/eel.js")
+        eel.expose(function)
+    print(f"[PY] Exposed {len(eel_functions)} functions to the website")
+
 
 #endregion
 
@@ -33,11 +29,19 @@ if __name__ == "__main__":
     # Test ticket = 21467
     # Department ID = 19000169805
     fresh = CUI_Client()
-    gui_thread = threading.Thread(target=OpenWebsite)
-    gui_thread.start()
-    BindEelFunctions(fresh)
+    eel.init('web')
+    #gui_thread = threading.Thread(target=OpenWebsite)
+    #gui_thread.start()
 
+    #NOTE: Add all functions that need to be exposed to the website here
+    eel_functions = [
+        fresh.Eel_ExposeTickets,
+        fresh.Eel_Print
+    ]
+    BindEelFunctions(eel_functions)
+    
+
+    print("[PY] Opening website")
+    eel.start("index.html", close_callback=CloseWebsite)
     while True:
-        continue
-
-    gui_thread.join()
+        eel.sleep(.5)
