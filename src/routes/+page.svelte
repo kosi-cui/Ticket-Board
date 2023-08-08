@@ -12,6 +12,7 @@
     // Images/Assets
     import eeficon from "$lib/assets/eeficon@2x.png"
     import cuiLogo from "$lib/assets/cui-logo@2x.png"
+    import "$lib/fonts.css"
 
 
     // Example Function Call w/ Rust API
@@ -45,14 +46,7 @@
 </div>
 
 
-
-<style lang="css">
-    @font-face {
-        font-family: "Gandhi Sans";
-        src: local('GhandiSans-Regular'), url('/fonts/GhandiSans-Regular.otf');
-        font-weight: 400;
-    }
-
+<style>
     .EefIcon{
         position: absolute;
         bottom: 0;
@@ -76,26 +70,18 @@
     transform: translateX(-8px) translateY(8px);
   }
 }
-.p-base-child {
-  position: absolute;
-  width: 92.19%;
-  top: 88px;
-  right: 3.75%;
-  left: 4.06%;
-  border-radius: 5px;
-  background-color: #ebeff3;
-  height: 32px;
-}
+
 .p-base-item {
   position: absolute;
   width: 100.26%;
   top: 55.5px;
   right: -0.29%;
   left: 0.03%;
-  border-top: 1px solid var(--color-lightgray);
+  border-top: 1px solid #ccd0d4;
   box-sizing: border-box;
   height: 3px;
 }
+
 .p-base-inner {
   position: absolute;
   height: 100vh;
@@ -104,6 +90,7 @@
   background-color: #004c23;
   width: 64px;
 }
+
 .cui-logo-icon {
   position: absolute;
   top: 12px;
@@ -112,77 +99,6 @@
   height: 32px;
   object-fit: cover;
 }
-
-.in-progress-reimages {
-  position: absolute;
-  top: 17px;
-  left: 69px;
-  font-size: 20px;
-  color: #12344d;
-  display: inline-block;
-  width: 356px;
-  height: 27px;
-}
-
-.line-div,
-.p-base-child1,
-.p-base-child2,
-.p-base-child3 {
-  position: absolute;
-  top: 87.25px;
-  left: 113.25px;
-  border-right: 1.5px solid var(--color-lightgray);
-  box-sizing: border-box;
-  width: 1.5px;
-  height: 32.5px;
-}
-
-.p-base-child1,
-.p-base-child2,
-.p-base-child3 {
-  left: 424.25px;
-}
-
-.p-base-child2,
-.p-base-child3 {
-  left: 1009.25px;
-}
-
-.p-base-child3 {
-  left: 1513.25px;
-}
-
-.assigned-to,
-.requester,
-.step,
-.subject {
-  position: absolute;
-  top: 95px;
-  left: 124px;
-  display: inline-block;
-  width: 76px;
-  height: 18px;
-}
-
-.assigned-to,
-.step,
-.subject {
-  left: 449px;
-  width: 181px;
-}
-
-.assigned-to,
-.step {
-  left: 1034px;
-  width: 182px;
-}
-
-.assigned-to {
-  left: 1538px;
-  width: 220px;
-}
-
-
 
 .p-base {
   position: absolute;
@@ -195,7 +111,7 @@
   text-align: left;
   font-size: var(--font-size-mini);
   color: var(--color-black);
-  font-family: var(--font-gandhi-sans);
+  font-family: "Ghandi-Sans", sans-serif;
 }
 
 .p-base-title{
@@ -203,6 +119,7 @@
 }
 
 .p-base-title h1{
+  font-family: "Ghandi-Sans", sans-serif;
   font-size: 24px;
   font-weight: 600;
   margin-top: 1%;

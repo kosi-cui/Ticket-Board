@@ -8,7 +8,7 @@ fn greet(name: &str) -> String {
 
 #[tauri::command]
 fn update_tickets(){
-  print!("Updating tickets...");
+  println!("Updating tickets...");
 }
 
 fn main() {

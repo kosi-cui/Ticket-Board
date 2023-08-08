@@ -39,6 +39,7 @@ table {
   margin-left: 10%;
   margin-top: 3%;
   font-size: 16px;
+  font-family: GhandiSans, sans-serif;
 }
 
 table th:first-child {

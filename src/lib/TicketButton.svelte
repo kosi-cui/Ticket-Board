@@ -12,6 +12,7 @@
 
 <style lang="css">
     .TicketButton{
+        font-family: "Ghandi-Sans", sans-serif; 
         visibility: visible;
         position: absolute;
         right: 0;
