@@ -111,7 +111,7 @@
   text-align: left;
   font-size: var(--font-size-mini);
   color: var(--color-black);
-  font-family: "Ghandi-Sans", sans-serif;
+  font-family: "Ghandi-Sans", 'Times New Roman', Times, serif;
 }
 
 .p-base-title{
@@ -119,7 +119,7 @@
 }
 
 .p-base-title h1{
-  font-family: "Ghandi-Sans", sans-serif;
+  font-family: 'Ghandi-Sans';
   font-size: 24px;
   font-weight: 600;
   margin-top: 1%;
