@@ -21,7 +21,8 @@ fn main() {
   let is_debug: bool = true;
   if is_debug{
     let mut api_obj : FreshAPI = api::FreshAPI::new();
-    api_obj.get_ticket(21816);
+    let ticket_json = api_obj.get_ticket(21816);
+    println!("{:#?}", ticket_json);
     return;
   }
   
