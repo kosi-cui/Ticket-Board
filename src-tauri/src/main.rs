@@ -2,7 +2,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use api::FreshAPI;
-
 mod api;
 
 
@@ -18,7 +17,7 @@ fn update_tickets(){
 
 
 fn main() {
-  let is_debug: bool = true;
+  let is_debug: bool = false;
   if is_debug{
     let mut api_obj : FreshAPI = api::FreshAPI::new();
     let ticket_json = api_obj.get_ticket(21816);
