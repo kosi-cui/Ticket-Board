@@ -1,6 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use api::FreshAPI;
+
 mod api;
 
 
@@ -16,11 +18,16 @@ fn update_tickets(){
 
 
 fn main() {
-  api::request();
-
+  let is_debug: bool = true;
+  if is_debug{
+    let mut api_obj : FreshAPI = api::FreshAPI::new();
+    api_obj.get_ticket(21816);
+    return;
+  }
+  
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![greet])
-    .invoke_handler(tauri::generate_handler![update_tickets])
-    .run(tauri::generate_context!())
-    .expect("error while running tauri application");
+  .invoke_handler(tauri::generate_handler![greet])
+  .invoke_handler(tauri::generate_handler![update_tickets])
+  .run(tauri::generate_context!())
+  .expect("error while running tauri application");
 }
