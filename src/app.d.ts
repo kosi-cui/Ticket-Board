@@ -9,4 +9,14 @@ declare global {
 	}
 }
 
-export {};
+declare class Task {
+	id: string;
+	name: string;
+}
+
+declare class Ticket {
+	id: string;
+	tasks: Task[];
+	createdOn: string;
+	assignedTo: string;
+}

@@ -1,5 +1,52 @@
-<script type="ts">
+<script lang="ts">
+    import {invoke} from "@tauri-apps/api";
 
+    import ReimageRow from "./ReimageRow.svelte";
+
+    const tempTasks : Task[] = 
+    [
+        {
+            name: "Label",
+            id: "0"
+        },
+        {
+            name: "Decrypt",
+            id: "1"
+        },
+        {
+           name: "Reimage",
+           id: "2"
+        }
+    ]
+
+    // Right now this array is just a placeholder for the data that will be returned from the Rust API
+    let tickets : Ticket[] = [
+      {
+        id: "0001",
+        tasks: tempTasks,
+        createdOn: "01/01/2021",
+        assignedTo: "John Doe"
+      },
+      {
+        id: "0002",
+        tasks: tempTasks,
+        createdOn: "01/01/2021",
+        assignedTo: "John Doe"
+      },
+    {
+        id: "0003",
+        tasks: tempTasks,
+        createdOn: "01/01/2021",
+        assignedTo: "John Doe"
+      },
+      {
+        id: "0004",
+        tasks: tempTasks,
+        createdOn: "01/01/2021",
+        assignedTo: "John Doe"
+      }
+
+    ]
 </script>
 
 
@@ -15,17 +62,9 @@
     </thead>
 
     <tbody>
-        <tr>
-            <td><input type="checkbox" name="check" value="check"></td>
-            <td>#INC-[NUM]</td>
-            <td>
-                <select name="tasks-[NUM]">
-                    <option value="Label">Label</option>
-                    <option value="Decrypt">Decrypt</option>
-                </select>
-            </td>
-            <td>01/01/2021</td>
-            <td>John Doe</td>
+        {#each tickets as ticket}
+          <ReimageRow ticket={ticket}/>
+        {/each}
     </tbody>
 </table>
 
@@ -39,7 +78,7 @@ table {
   margin-left: 10%;
   margin-top: 3%;
   font-size: 16px;
-  font-family: GhandiSans, sans-serif;
+  font-family: 'Gandhi-Sans', 'Times New Roman', Times, serif;
 }
 
 table th:first-child {
@@ -61,22 +100,5 @@ th {
   border-right: solid #cfd7df 2px;
 }
 
-tbody tr:hover {
-  background-color: #f2f7fc;
-}
 
-tr td:first-child{
-    border-right: solid #cfd7df 3px;
-}
-
-tbody tr{
-  border-bottom: solid #ebeff3 .5px;
-}
-
-select {
-  border-color: white;
-  background-color: white;
-  box-shadow: 0 0 0 0 white;
-  text-align: left;
-}
 </style>
