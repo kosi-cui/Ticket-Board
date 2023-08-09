@@ -8,7 +8,7 @@ const APP: &str = "freshservice-tauri";
 pub struct XdgDirs {
     cache_dir: PathBuf,
     pub config_dir: PathBuf,
-    data_dir: PathBuf,
+    pub data_dir: PathBuf,
     runtime_dir: PathBuf,
 }
 
@@ -32,13 +32,6 @@ impl XdgDirs{
         }
 
         return output;
-    }
-
-    pub fn test_dirs(&self) {
-        println!("cache_dir: {:#?}", self.cache_dir);
-        println!("config_dir: {:#?}", self.config_dir);
-        println!("data_dir: {:#?}", self.data_dir);
-        println!("runtime_dir: {:#?}", self.runtime_dir);
     }
 
     pub fn check_file_exists(&self, file_name: &str) -> bool{

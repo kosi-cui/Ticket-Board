@@ -17,11 +17,11 @@ fn update_tickets(){
 
 
 fn main() {
-  let is_debug: bool = false;
+  let is_debug: bool = true;
   if is_debug{
     let mut api_obj : FreshAPI = api::FreshAPI::new();
-    let ticket_json = api_obj.get_ticket(21816);
-    println!("{:#?}", ticket_json);
+    //let ticket_json = api_obj.get_ticket(21816);
+    api_obj.get_reimage_ticket_ids("status:2%20AND%20tag:\'Reimage\'");
     return;
   }
   

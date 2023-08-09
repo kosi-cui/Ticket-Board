@@ -2,7 +2,9 @@ pub mod requests;
 pub mod ticket_s;
 pub mod dirs;
 use std::fs::File;
-use std::io::prelude::*;
+use std::io::{prelude::*, BufWriter};
+
+use serde_json::Value;
 
 
 // Class for Freshservice API
@@ -21,7 +23,6 @@ impl FreshAPI{
             xdg_dirs: dirs::XdgDirs::new(),
         };
         new_api_obj.get_credentials();
-        new_api_obj.xdg_dirs.test_dirs();
         return new_api_obj;
     }
 
@@ -76,6 +77,31 @@ impl FreshAPI{
         let ticket_url_addition = "/api/v2/tickets/".to_string() + &id.to_string();
         let url = self.domain.to_string() + &ticket_url_addition;
         let req = requests::ticket_get_request(self.api_key.to_string(), url);
-        println!("{:#?}", req);
+        let ticket_json: Value = serde_json::from_value(req).unwrap();
+        let _ = self.write_ticket_file(ticket_json, id);
+    }
+
+    fn write_ticket_file(&mut self, ticket: Value, id: i32) -> std::io::Result<()>{
+        let file_name = format!("{0}.json", id.to_string());
+        let file_path: String = dirs::XdgDirs::append_to_path(&self.xdg_dirs.data_dir, &file_name).into_os_string().into_string().unwrap();
+        println!("Writing ticket to {0}", file_path);
+        let file = File::create(file_path)?;
+        let mut writer = BufWriter::new(&file);
+        serde_json::to_writer_pretty(&mut writer, &ticket)?;
+        writer.flush()?;
+        Ok(())
+    }
+
+    pub fn get_reimage_ticket_ids(&mut self, query: &str) -> Vec<i32>{
+        let query_addition = format!("\"{}\"", query);
+        let mut url = self.domain.to_string() + r#"/api/v2/search/tickets?query="# + query_addition.as_str();
+        url = url.to_string();
+        let req = requests::ticket_get_request(self.api_key.to_string(), url);
+        let mut ticket_ids: Vec<i32> = Vec::new();
+        for ticket in req["tickets"].as_object().unwrap(){
+            //ticket_ids.push(ticket["id"].as_i64().unwrap() as i32);
+        }
+
+        return ticket_ids;
     }
 }
