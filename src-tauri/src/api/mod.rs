@@ -5,13 +5,14 @@ use std::fs::File;
 use std::io::{prelude::*, BufWriter};
 
 use serde_json::Value;
-
+use serde_json::json;
 
 // Class for Freshservice API
 pub struct FreshAPI{
     pub api_key: String,
     pub domain: String,
     pub xdg_dirs: dirs::XdgDirs,
+    pub ticket_ids: Vec<i32>,
 }
 
 // Implementation of FreshAPI
@@ -21,6 +22,7 @@ impl FreshAPI{
             api_key: String::new(),
             domain: String::new(),
             xdg_dirs: dirs::XdgDirs::new(),
+            ticket_ids: Vec::new(),
         };
         new_api_obj.get_credentials();
         return new_api_obj;
@@ -71,17 +73,17 @@ impl FreshAPI{
         Ok(())
     }
 
-
-    pub fn get_ticket(&mut self, id: i32) {
+    pub fn get_ticket(&mut self, id: i32) -> serde_json::Value {
         println!("Getting ticket...");
         let ticket_url_addition = "/api/v2/tickets/".to_string() + &id.to_string();
         let url = self.domain.to_string() + &ticket_url_addition;
         let req = requests::ticket_get_request(self.api_key.to_string(), url);
         let ticket_json: Value = serde_json::from_value(req).unwrap();
-        let _ = self.write_ticket_file(ticket_json, id);
+        //let _ = self.write_ticket_file(ticket_json, id);
+        return ticket_json;
     }
 
-    fn write_ticket_file(&mut self, ticket: Value, id: i32) -> std::io::Result<()>{
+    fn write_ticket_full(&mut self, ticket: Value, id: i32) -> std::io::Result<()>{
         let file_name = format!("{0}.json", id.to_string());
         let file_path: String = dirs::XdgDirs::append_to_path(&self.xdg_dirs.data_dir, &file_name).into_os_string().into_string().unwrap();
         println!("Writing ticket to {0}", file_path);
@@ -92,16 +94,52 @@ impl FreshAPI{
         Ok(())
     }
 
-    pub fn get_reimage_ticket_ids(&mut self, query: &str) -> Vec<i32>{
+    fn write_ticket_web(&mut self, ticket: serde_json::Value) -> std::io::Result<()> {
+        let file_name = format!("{0}.json", ticket["id"].as_i64().unwrap());
+        let file_path: String = dirs::XdgDirs::append_to_path(&self.xdg_dirs.data_dir, &file_name).into_os_string().into_string().unwrap();
+        println!("Writing shortened ticket to {0}", file_path);
+        let shortned_ticket = json!(null);
+        // Need only the following out of the ticket:
+        /*
+            1) id
+            2) tasks
+            2) created_at
+            3) assigned_id
+         */   
+        Ok(())
+    }
+
+    fn get_reimage_ticket_ids(&mut self, query: &str) -> Vec<i32>{
         let query_addition = format!("\"{}\"", query);
-        let mut url = self.domain.to_string() + r#"/api/v2/search/tickets?query="# + query_addition.as_str();
+        let mut url = self.domain.to_string() + r#"/api/v2/tickets/filter?query="# + query_addition.as_str();
         url = url.to_string();
         let req = requests::ticket_get_request(self.api_key.to_string(), url);
         let mut ticket_ids: Vec<i32> = Vec::new();
-        for ticket in req["tickets"].as_object().unwrap(){
-            //ticket_ids.push(ticket["id"].as_i64().unwrap() as i32);
+        for (key, value) in req.as_object().unwrap(){
+            if key == "tickets"
+            {
+                for ticket in value.as_array().unwrap(){
+                    ticket_ids.push(ticket["id"].as_i64().unwrap() as i32);
+                }
+            }
         }
-
         return ticket_ids;
+    }
+
+    pub fn get_reimage_tickets(&mut self) {
+        println!("Getting reimage tickets...");
+        let ticket_nums: Vec<i32> = self.get_reimage_ticket_ids("status:2 AND tag:\'Reimage\'");
+        for id in ticket_nums.iter() {
+            // If ticket is already downloaded, skip it
+            let file_name = format!("{0}.json", id.to_string());
+
+
+            if self.xdg_dirs.check_data_file_exists(&file_name){
+                println!("Ticket {0} already downloaded, skipping...", id);
+                continue;
+            }
+            self.get_ticket(*id);
+        }
+        self.ticket_ids = ticket_nums;
     }
 }

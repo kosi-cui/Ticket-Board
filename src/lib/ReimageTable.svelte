@@ -45,7 +45,6 @@
         createdOn: "01/01/2021",
         assignedTo: "John Doe"
       }
-
     ]
 </script>
 

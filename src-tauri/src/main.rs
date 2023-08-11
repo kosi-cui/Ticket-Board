@@ -4,24 +4,30 @@
 use api::FreshAPI;
 mod api;
 
-
 #[tauri::command]
 fn greet(name: &str) -> String {
   return format!("Hello, {name}!");
 }
 
 #[tauri::command]
-fn update_tickets(){
-  println!("Updating tickets...");
+fn update_tickets() -> Vec<i32>{
+  let mut api_obj : FreshAPI = api::FreshAPI::new();
+  api_obj.get_reimage_tickets();
+  return api_obj.ticket_ids;
 }
 
 
+
+
+
+
 fn main() {
-  let is_debug: bool = true;
+  let is_debug: bool = false;
+  let mut api_obj : FreshAPI = api::FreshAPI::new();
   if is_debug{
-    let mut api_obj : FreshAPI = api::FreshAPI::new();
     //let ticket_json = api_obj.get_ticket(21816);
-    api_obj.get_reimage_ticket_ids("status:2%20AND%20tag:\'Reimage\'");
+    //println!("{:#?}", ticket_json);
+    api_obj.get_reimage_tickets();
     return;
   }
   

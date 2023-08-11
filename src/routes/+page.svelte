@@ -14,6 +14,9 @@
     import cuiLogo from "$lib/assets/cui-logo@2x.png"
     import "$lib/fonts.css"
 
+    // Variables
+    let tickets = [];
+    let showLoading = true;
 
     // Example Function Call w/ Rust API
     // let name = "";
@@ -21,7 +24,16 @@
     // async function greet() {
     //     output = await invoke("greet", {name});
     // }
+    
 
+    async function updateTickets() {
+      showLoading = true;
+      let tickets = await invoke("update_tickets");
+      console.log("Updating Tickets");
+      showLoading = false;
+    }
+
+    updateTickets();
 
 </script>
 
@@ -32,9 +44,13 @@
         <h1>In-Progress Reimages</h1>
     </div>
     <div class="p-base-item"></div>
-    <LoadingObject />
+    {#if showLoading}
+      <LoadingObject />
+    {/if}
     <div class="p-base-item">
+      {#if !showLoading}
         <ReimageTable />
+      {/if}
     </div>
     <div class="p-base-inner"></div>
 

@@ -39,6 +39,7 @@
 <style>
     tr:hover {
         background-color: #f2f7fc;
+        
     }
 
     tr td:first-child{
@@ -46,7 +47,7 @@
     }
 
     tr{
-        border-bottom: solid #ebeff3 .5px;
+        border-bottom: solid #ebeff3 .25px;
         font-family: 'Gandhi-Sans', sans-serif;
     }
 

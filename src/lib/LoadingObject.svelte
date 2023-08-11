@@ -1,8 +1,9 @@
-<script>
+<script lang="ts">
 
 </script>
 
-<div id="loader" class="p-base-item">
+
+<div id="loader" class="p-base-item" >
 </div>
 
 <style lang="css">
