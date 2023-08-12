@@ -79,7 +79,7 @@ impl FreshAPI{
         let url = self.domain.to_string() + &ticket_url_addition;
         let req = requests::ticket_get_request(self.api_key.to_string(), url);
         let ticket_json: Value = serde_json::from_value(req).unwrap();
-        //let _ = self.write_ticket_file(ticket_json, id);
+        let _ = self.write_ticket_web(&ticket_json);
         return ticket_json;
     }
 
@@ -94,18 +94,29 @@ impl FreshAPI{
         Ok(())
     }
 
-    fn write_ticket_web(&mut self, ticket: serde_json::Value) -> std::io::Result<()> {
-        let file_name = format!("{0}.json", ticket["id"].as_i64().unwrap());
+    fn write_ticket_web(&mut self, ticket: &serde_json::Value) -> std::io::Result<()> {
+        let file_name = format!("{0}.json", ticket["ticket"]["id"].as_i64().unwrap());
         let file_path: String = dirs::XdgDirs::append_to_path(&self.xdg_dirs.data_dir, &file_name).into_os_string().into_string().unwrap();
         println!("Writing shortened ticket to {0}", file_path);
-        let shortned_ticket = json!(null);
-        // Need only the following out of the ticket:
-        /*
-            1) id
-            2) tasks
-            2) created_at
-            3) assigned_id
-         */   
+        let shortned_ticket = json!(
+            {
+                "id": ticket["ticket"]["id"],
+                // TODO: redo the "tasks" to be the tasks that we get from the ticket
+                "tasks": json!(
+                    {
+                        "name": "Label",
+                        "id": 0
+                    }
+                ),
+                "createdOn": ticket["ticket"]["created_at"].as_str().unwrap(),
+                "assignedTo": ticket["ticket"]["assigned_id"], // This line we will need to convert the assigned_id to the Map of the agents in the helpdesk
+            });
+          
+        // Write the shortened ticket to the file
+        let file = File::create(file_path)?;
+        let mut writer = BufWriter::new(&file);
+        serde_json::to_writer_pretty(&mut writer, &shortned_ticket)?;
+        writer.flush()?;
         Ok(())
     }
 
