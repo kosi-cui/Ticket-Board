@@ -25,22 +25,31 @@
     // }
     
 
-
-    // TODO: Update this function to return a value that can be passed to the ReimageTable component!
-    function updateTickets(): Record<string, any> {
+    async function retrieveTickets() {
       showLoading = true;
-      const tickets = new Promise<Record<string, any>>((resolve, reject) => {
-        invoke("get_tickets").then((res) => {
-          resolve(res);
+      return new Promise((resolve, reject) => {
+        invoke("update_tickets").then((result) => {
+          showLoading = false;
+          return resolve(result);
         });
       });
-
-      showLoading = false;
-      return tickets;
     }
 
-    let tickets: Record<string, any> = updateTickets();
-    console.log("Tickets: ", tickets);
+    function parseTickets(): Array<Record<string, any>> {
+      let output: Array<Record<string, any>> = [];
+      let tickets = retrieveTickets().then( function(result) {
+        if(typeof result == "object" && result != null) {
+          var test = Object.entries(result);
+          for (const [key, value] of Object.entries(result)) {
+            output.push(value);
+          }
+        }
+        return result;
+      });
+      return output;
+    }
+
+    let tickets = parseTickets();
 </script>
 
 
@@ -54,7 +63,7 @@
     {/if}
     <div class="p-base-item">
       {#if !showLoading}
-        <ReimageTable />
+        <ReimageTable tickets={tickets}/>
       {/if}
     </div>
     <div class="p-base-inner"></div>

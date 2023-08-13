@@ -46,6 +46,7 @@
         assignedTo: "John Doe"
       }
     ]
+    console.log(typeof tickets);
 </script>
 
 
