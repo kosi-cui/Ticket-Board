@@ -2,9 +2,10 @@ pub mod requests;
 pub mod ticket_s;
 pub mod dirs;
 use std::fs::File;
+use std::io::Read;
 use std::io::{prelude::*, BufWriter};
 
-use serde_json::Value;
+use serde_json::{Value, Map};
 use serde_json::json;
 
 // Class for Freshservice API
@@ -52,7 +53,6 @@ impl FreshAPI{
             println!("Conf file found, reading...");
             self.read_conf_file().unwrap();
         }
-        println!("Credentials: {:#?}, {:#?}", self.api_key, self.domain)
     }
 
     fn create_conf_file(&mut self) -> std::io::Result<()>{
@@ -71,6 +71,15 @@ impl FreshAPI{
         self.api_key = contents[0].to_string();
         self.domain = contents[1].to_string();
         Ok(())
+    }
+
+    fn read_data_file(&mut self, file_name: String) -> serde_json::Value{
+        let file_path: String = dirs::XdgDirs::append_to_path(&self.xdg_dirs.data_dir, &file_name).into_os_string().into_string().unwrap();
+        let file = File::open(file_path);
+        let mut contents = String::new();
+        file.unwrap().read_to_string(&mut contents).unwrap();
+        let contents: serde_json::Value = serde_json::from_str(&contents).unwrap();
+        contents
     }
 
     pub fn get_ticket(&mut self, id: i32) -> serde_json::Value {
@@ -98,7 +107,7 @@ impl FreshAPI{
         let file_name = format!("{0}.json", ticket["ticket"]["id"].as_i64().unwrap());
         let file_path: String = dirs::XdgDirs::append_to_path(&self.xdg_dirs.data_dir, &file_name).into_os_string().into_string().unwrap();
         println!("Writing shortened ticket to {0}", file_path);
-        let shortned_ticket = json!(
+        let _shortned_ticket = json!(
             {
                 "id": ticket["ticket"]["id"],
                 // TODO: redo the "tasks" to be the tasks that we get from the ticket
@@ -115,7 +124,7 @@ impl FreshAPI{
         // Write the shortened ticket to the file
         let file = File::create(file_path)?;
         let mut writer = BufWriter::new(&file);
-        serde_json::to_writer_pretty(&mut writer, &shortned_ticket)?;
+        serde_json::to_writer_pretty(&mut writer, &_shortned_ticket)?;
         writer.flush()?;
         Ok(())
     }
@@ -137,9 +146,10 @@ impl FreshAPI{
         return ticket_ids;
     }
 
-    pub fn get_reimage_tickets(&mut self) {
+    pub fn get_reimage_tickets(&mut self) -> Vec<serde_json::Value> {
         println!("Getting reimage tickets...");
         let ticket_nums: Vec<i32> = self.get_reimage_ticket_ids("status:2 AND tag:\'Reimage\'");
+        let mut tickets: Vec<serde_json::Value> = Vec::new();
         for id in ticket_nums.iter() {
             // If ticket is already downloaded, skip it
             let file_name = format!("{0}.json", id.to_string());
@@ -147,10 +157,15 @@ impl FreshAPI{
 
             if self.xdg_dirs.check_data_file_exists(&file_name){
                 println!("Ticket {0} already downloaded, skipping...", id);
+                let ticket_json = self.read_data_file(file_name);
+                tickets.push(ticket_json);
                 continue;
             }
             self.get_ticket(*id);
+            let new_ticket_json = self.read_data_file(file_name);
+            tickets.push(new_ticket_json);
         }
         self.ticket_ids = ticket_nums;
+        return tickets;
     }
 }

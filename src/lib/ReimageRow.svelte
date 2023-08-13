@@ -1,7 +1,7 @@
 <script lang="ts">
     import "$lib/fonts.css"
 
-    export let ticket: Ticket = {
+    export let ticket: Record<string, any> = {
         id: "0001",
         tasks: [
             {

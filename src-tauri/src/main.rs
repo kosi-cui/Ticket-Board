@@ -10,10 +10,11 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-fn update_tickets() -> Vec<i32>{
+fn update_tickets() -> Vec<serde_json::Value>{
   let mut api_obj : FreshAPI = api::FreshAPI::new();
-  api_obj.get_reimage_tickets();
-  return api_obj.ticket_ids;
+  let ticket_jsons = api_obj.get_reimage_tickets();
+  println!("{:#?}", ticket_jsons);
+  return ticket_jsons;
 }
 
 

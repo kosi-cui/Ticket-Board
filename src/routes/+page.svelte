@@ -15,7 +15,6 @@
     import "$lib/fonts.css"
 
     // Variables
-    let tickets = [];
     let showLoading = true;
 
     // Example Function Call w/ Rust API
@@ -26,17 +25,23 @@
     // }
     
 
-    async function updateTickets() {
+
+    // TODO: Update this function to return a value that can be passed to the ReimageTable component!
+    function updateTickets(): Record<string, any> {
       showLoading = true;
-      let tickets = await invoke("update_tickets");
-      console.log("Updating Tickets");
+      const tickets = new Promise<Record<string, any>>((resolve, reject) => {
+        invoke("get_tickets").then((res) => {
+          resolve(res);
+        });
+      });
+
       showLoading = false;
+      return tickets;
     }
 
-    updateTickets();
-
+    let tickets: Record<string, any> = updateTickets();
+    console.log("Tickets: ", tickets);
 </script>
-
 
 
 <div class="p-base">

@@ -3,24 +3,24 @@
 
     import ReimageRow from "./ReimageRow.svelte";
 
-    const tempTasks : Task[] = 
+    const tempTasks : Record<string, any>[] = 
     [
         {
             name: "Label",
-            id: "0"
+            id: 0
         },
         {
             name: "Decrypt",
-            id: "1"
+            id: 1
         },
         {
            name: "Reimage",
-           id: "2"
+           id: 2
         }
     ]
 
     // Right now this array is just a placeholder for the data that will be returned from the Rust API
-    let tickets : Ticket[] = [
+    export let tickets : Record<string, any>[] = [
       {
         id: "0001",
         tasks: tempTasks,
