@@ -13,7 +13,6 @@ fn greet(name: &str) -> String {
 fn update_tickets() -> Vec<serde_json::Value>{
   let mut api_obj : FreshAPI = api::FreshAPI::new();
   let ticket_jsons = api_obj.get_reimage_tickets();
-  println!("{:#?}", ticket_jsons);
   ticket_jsons
 }
 

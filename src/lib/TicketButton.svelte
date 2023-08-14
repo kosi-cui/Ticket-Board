@@ -1,9 +1,7 @@
 <script type="ts">
     import {invoke} from "@tauri-apps/api";
 
-    async function updateTickets() {
-        await invoke("updateTickets");
-    }
+    export let updateTickets
 </script>
 
 <div class="TicketButton">

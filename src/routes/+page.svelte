@@ -2,17 +2,15 @@
     // Imports
 
     // Rust API
-    import { invoke } from "@tauri-apps/api/tauri";
-    import { onMount } from "svelte";
-
-    // XDG Dirs
-    import {readDir, BaseDirectory} from "@tauri-apps/api/fs";
+    import { invoke } from "@tauri-apps/api";
+    import { onMount} from "svelte";
+    import { writable } from "svelte/store";
 
     // Svelte Components
     import TicketButton from "$lib/TicketButton.svelte"
     import ReimageTable from "$lib/ReimageTable.svelte"
     import LoadingObject from "$lib/LoadingObject.svelte"
-    
+
     // Images/Assets
     import eeficon from "$lib/assets/eeficon@2x.png"
     import cuiLogo from "$lib/assets/cui-logo@2x.png"
@@ -31,79 +29,22 @@
 
     const updateTickets = async () => {
       showLoading = true;
-      let tickets = [];
       let output = await invoke("update_tickets")
         .then((ticketArray) =>
         {
-          tickets = ticketArray;
+          tickets.set(ticketArray);
           showLoading = false;
         })
         .catch((err) => {
           console.log(err);
         });
-      return tickets;
+      return output;
     }
 
-    // function retrieveTickets() {
-    //   showLoading = true;
-    //   let tickets = [];
-    //   let output = invoke("update_tickets")
-    //     .then((ticketArray) =>
-    //     {
-    //       console.log(ticketArray);
-    //       tickets = ticketArray;
-    //       showLoading = false;
-    //     })
-    //     .catch((err) => {
-    //       console.log(err);
-    //     });
-    //   return tickets;
-    // }
-    
-    const tempTasks = [
-        {
-            name: "Label",
-            id: 0
-        },
-        {
-            name: "Decrypt",
-            id: 1
-        },
-        {
-           name: "Reimage",
-           id: 2
-        } 
-    ];
-
-    export let tickets = [
-      {
-        id: "0001",
-        tasks: tempTasks,
-        createdOn: "01/01/2021",
-        assignedTo: "John Doe"
-      },
-      {
-        id: "0002",
-        tasks: tempTasks,
-        createdOn: "01/01/2021",
-        assignedTo: "John Doe"
-      },
-    {
-        id: "0003",
-        tasks: tempTasks,
-        createdOn: "01/01/2021",
-        assignedTo: "John Doe"
-      },
-      {
-        id: "0004",
-        tasks: tempTasks,
-        createdOn: "01/01/2021",
-        assignedTo: "John Doe"
-      }
-    ];
+    export const tickets = writable([]);
 
     onMount(async () => {
-      tickets = await updateTickets();
+      await updateTickets();
       console.log(tickets);
     });
 </script>
@@ -118,14 +59,14 @@
       <LoadingObject />
     {/if}
     <div class="p-base-item">
+
       {#if !showLoading}
-        {#await tickets}
-          <LoadingObject />
+        {#await onMount}
+          <p>Fetching tickets...</p>
         {:then ticket}
-          <!-- TODO: Need to figure out how to send the tickets value to the table component -->
-          <ReimageTable tickets={ ticket } />
+          <ReimageTable tickets={$tickets} />
         {:catch error}
-          <p>{error.message}</p>
+          <p>Something went wrong: {error.message}</p>
         {/await}
       {/if}
     </div>
@@ -133,7 +74,7 @@
 
     <img class="cui-logo-icon" alt="" src={cuiLogo} />
 </div>
-<TicketButton />
+<TicketButton updateTickets = {updateTickets}/>
 <div class="EefIcon">
     <img alt="" src={eeficon} height="48px" width="48px" />
 </div>

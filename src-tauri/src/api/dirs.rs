@@ -36,13 +36,11 @@ impl XdgDirs{
 
     pub fn check_file_exists(&self, file_name: &str) -> bool{
         let p = XdgDirs::append_to_path(&self.config_dir, file_name);  
-        println!("Checking if file exists: {:#?}", p);
         p.exists()
     }
 
     pub fn check_data_file_exists(&self, file_name: &str) -> bool{
         let p = XdgDirs::append_to_path(&self.data_dir, file_name);  
-        println!("Checking if file exists: {:#?}", p);
         p.exists()
     }
 

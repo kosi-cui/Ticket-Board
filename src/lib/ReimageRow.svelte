@@ -1,48 +1,49 @@
-<script lang="ts">
+<script>
     import "$lib/fonts.css"
+    import { writable } from "svelte/store";
 
-    const delay = ms => new Promise(res => setTimeout(res, ms));
+    const tasks = writable([]);
+    const id = writable("");
+    const date = writable("");
+    const assigned = writable("");
 
-    export let ticket: Record<string, any> = {
-        id: "0001",
-        tasks: [
-            {
-                name: "Label",
-                id: "0"
-            },
-            {
-                name: "Decrypt",
-                id: "1"
+
+    function updateTicket(){
+        id.set(ticket.id);
+        tasks.set(ticket.tasks);
+        date.set(ticket.createdOn);
+        assigned.set(ticket.assignedTo);
+        $tasks.forEach(task => {
+            console.log(task.status);
+            if (task.status != 1) {
+                $tasks.splice($tasks.indexOf(task), 1);
             }
-        ],
-        createdOn: "01/01/2021",
-        assignedTo: "John Doe"
+        })
     }
 
-    let id = ticket.id;
-    let date = ticket.createdOn;
-    let assigned = ticket.assignedTo;
+    export let ticket
+
+    $: ticket && updateTicket();
 </script>
 
 <tr>
-    <td><input type="checkbox" name= "{id}-cb" value="check"/></td>
-    <td>INC-{id}</td>
+    <td><input type="checkbox" name= "{$id}-cb" value="check"/></td>
+    <td>INC-{$id}</td>
     <td>
-        <select name="{id}-tasks">
+        <select name="{$id}-tasks">
             {#each ticket.tasks as task}
-                <option value="{task.name}">{task.name}</option>
+                <option value="{task.title}">{task.title}</option>
             {/each}
         </select>
     </td>
-    <td>{date}</td>
-    <td>{assigned}</td>
+    <td>{$date}</td>
+    <td>{$assigned}</td>
 </tr>
 
 
 <style>
     tr:hover {
         background-color: #f2f7fc;
-        
     }
 
     tr td:first-child{
