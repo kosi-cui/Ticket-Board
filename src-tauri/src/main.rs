@@ -6,7 +6,7 @@ mod api;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
-  return format!("Hello, {name}!");
+  format!("Hello, {name}!")
 }
 
 #[tauri::command]
@@ -14,12 +14,8 @@ fn update_tickets() -> Vec<serde_json::Value>{
   let mut api_obj : FreshAPI = api::FreshAPI::new();
   let ticket_jsons = api_obj.get_reimage_tickets();
   println!("{:#?}", ticket_jsons);
-  return ticket_jsons;
+  ticket_jsons
 }
-
-
-
-
 
 
 fn main() {

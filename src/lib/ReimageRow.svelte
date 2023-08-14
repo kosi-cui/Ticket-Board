@@ -1,6 +1,8 @@
 <script lang="ts">
     import "$lib/fonts.css"
 
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+
     export let ticket: Record<string, any> = {
         id: "0001",
         tasks: [
@@ -16,6 +18,7 @@
         createdOn: "01/01/2021",
         assignedTo: "John Doe"
     }
+
     let id = ticket.id;
     let date = ticket.createdOn;
     let assigned = ticket.assignedTo;

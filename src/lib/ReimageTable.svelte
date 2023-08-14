@@ -1,9 +1,9 @@
-<script lang="ts">
+<script>
     import {invoke} from "@tauri-apps/api";
 
     import ReimageRow from "./ReimageRow.svelte";
 
-    const tempTasks : Record<string, any>[] = 
+    const tempTasks = 
     [
         {
             name: "Label",
@@ -19,8 +19,9 @@
         }
     ]
 
+
     // Right now this array is just a placeholder for the data that will be returned from the Rust API
-    export let tickets : Record<string, any>[] = [
+    export const tickets = [
       {
         id: "0001",
         tasks: tempTasks,
@@ -46,7 +47,8 @@
         assignedTo: "John Doe"
       }
     ]
-    console.log(typeof tickets);
+    console.log(tickets);
+
 </script>
 
 
@@ -62,9 +64,7 @@
     </thead>
 
     <tbody>
-        {#each tickets as ticket}
-          <ReimageRow ticket={ticket}/>
-        {/each}
+
     </tbody>
 </table>
 

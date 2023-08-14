@@ -5,7 +5,7 @@ use std::fs::File;
 use std::io::Read;
 use std::io::{prelude::*, BufWriter};
 
-use serde_json::{Value, Map};
+use serde_json::Value;
 use serde_json::json;
 
 // Class for Freshservice API
@@ -92,16 +92,16 @@ impl FreshAPI{
         return ticket_json;
     }
 
-    fn write_ticket_full(&mut self, ticket: Value, id: i32) -> std::io::Result<()>{
-        let file_name = format!("{0}.json", id.to_string());
-        let file_path: String = dirs::XdgDirs::append_to_path(&self.xdg_dirs.data_dir, &file_name).into_os_string().into_string().unwrap();
-        println!("Writing ticket to {0}", file_path);
-        let file = File::create(file_path)?;
-        let mut writer = BufWriter::new(&file);
-        serde_json::to_writer_pretty(&mut writer, &ticket)?;
-        writer.flush()?;
-        Ok(())
-    }
+    // fn write_ticket_full(&mut self, ticket: Value, id: i32) -> std::io::Result<()>{
+    //     let file_name = format!("{0}.json", id.to_string());
+    //     let file_path: String = dirs::XdgDirs::append_to_path(&self.xdg_dirs.data_dir, &file_name).into_os_string().into_string().unwrap();
+    //     println!("Writing ticket to {0}", file_path);
+    //     let file = File::create(file_path)?;
+    //     let mut writer = BufWriter::new(&file);
+    //     serde_json::to_writer_pretty(&mut writer, &ticket)?;
+    //     writer.flush()?;
+    //     Ok(())
+    // }
 
     fn write_ticket_web(&mut self, ticket: &serde_json::Value) -> std::io::Result<()> {
         let file_name = format!("{0}.json", ticket["ticket"]["id"].as_i64().unwrap());

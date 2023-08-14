@@ -1,8 +1,12 @@
-<script lang="ts">
+<script>
     // Imports
 
     // Rust API
-    import { invoke } from "@tauri-apps/api";
+    import { invoke } from "@tauri-apps/api/tauri";
+    import { onMount } from "svelte";
+
+    // XDG Dirs
+    import {readDir, BaseDirectory} from "@tauri-apps/api/fs";
 
     // Svelte Components
     import TicketButton from "$lib/TicketButton.svelte"
@@ -23,33 +27,85 @@
     // async function greet() {
     //     output = await invoke("greet", {name});
     // }
-    
 
-    async function retrieveTickets() {
+
+    const updateTickets = async () => {
       showLoading = true;
-      return new Promise((resolve, reject) => {
-        invoke("update_tickets").then((result) => {
+      let tickets = [];
+      let output = await invoke("update_tickets")
+        .then((ticketArray) =>
+        {
+          tickets = ticketArray;
           showLoading = false;
-          return resolve(result);
+        })
+        .catch((err) => {
+          console.log(err);
         });
-      });
+      return tickets;
     }
 
-    function parseTickets(): Array<Record<string, any>> {
-      let output: Array<Record<string, any>> = [];
-      let tickets = retrieveTickets().then( function(result) {
-        if(typeof result == "object" && result != null) {
-          var test = Object.entries(result);
-          for (const [key, value] of Object.entries(result)) {
-            output.push(value);
-          }
-        }
-        return result;
-      });
-      return output;
-    }
+    // function retrieveTickets() {
+    //   showLoading = true;
+    //   let tickets = [];
+    //   let output = invoke("update_tickets")
+    //     .then((ticketArray) =>
+    //     {
+    //       console.log(ticketArray);
+    //       tickets = ticketArray;
+    //       showLoading = false;
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    //   return tickets;
+    // }
+    
+    const tempTasks = [
+        {
+            name: "Label",
+            id: 0
+        },
+        {
+            name: "Decrypt",
+            id: 1
+        },
+        {
+           name: "Reimage",
+           id: 2
+        } 
+    ];
 
-    let tickets = parseTickets();
+    export let tickets = [
+      {
+        id: "0001",
+        tasks: tempTasks,
+        createdOn: "01/01/2021",
+        assignedTo: "John Doe"
+      },
+      {
+        id: "0002",
+        tasks: tempTasks,
+        createdOn: "01/01/2021",
+        assignedTo: "John Doe"
+      },
+    {
+        id: "0003",
+        tasks: tempTasks,
+        createdOn: "01/01/2021",
+        assignedTo: "John Doe"
+      },
+      {
+        id: "0004",
+        tasks: tempTasks,
+        createdOn: "01/01/2021",
+        assignedTo: "John Doe"
+      }
+    ];
+
+    onMount(async () => {
+      tickets = await updateTickets();
+      console.log(tickets);
+    });
 </script>
 
 
@@ -63,7 +119,14 @@
     {/if}
     <div class="p-base-item">
       {#if !showLoading}
-        <ReimageTable tickets={tickets}/>
+        {#await tickets}
+          <LoadingObject />
+        {:then ticket}
+          <!-- TODO: Need to figure out how to send the tickets value to the table component -->
+          <ReimageTable tickets={ ticket } />
+        {:catch error}
+          <p>{error.message}</p>
+        {/await}
       {/if}
     </div>
     <div class="p-base-inner"></div>

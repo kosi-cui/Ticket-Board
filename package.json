@@ -30,6 +30,9 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@tauri-apps/api": "^1.4.0"
+		"@tauri-apps/api": "^1.4.0",
+		"fs": "^0.0.1-security",
+		"path": "^0.12.7",
+		"xdg-basedir": "^5.1.0"
 	}
 }
