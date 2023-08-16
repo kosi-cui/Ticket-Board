@@ -4,6 +4,7 @@ pub mod dirs;
 use std::fs::File;
 use std::io::Read;
 use std::io::{prelude::*, BufWriter};
+use std::str::FromStr;
 
 use serde_json::Value;
 use serde_json::json;
@@ -31,6 +32,12 @@ impl FreshAPI{
         };
         new_api_obj.get_credentials();
         new_api_obj.parse_agents();
+
+        // Close_ticket_task testing
+        /*
+            For actual product, will get ticket_id & task_id from frontend
+         */
+        new_api_obj.close_ticket_task(22027, 1410);
         return new_api_obj;
     }
 
@@ -122,9 +129,15 @@ impl FreshAPI{
         let tasks: Vec<serde_json::Value> = self.get_tasks(ticket["ticket"]["id"].as_i64().unwrap() as i32);
         let agent_id = ticket["ticket"]["responder_id"].as_i64().unwrap() as i32;
         let agent_name = self.agent_dict.get(&agent_id).unwrap().to_string();
+
+        let temp_name = ticket["ticket"]["subject"].to_string();
+        let ticket_name: Vec<&str> = temp_name.split(" - ").collect();
+        let subject = ticket_name[1];
+
         let _shortned_ticket = json!(
             {
                 "id": ticket["ticket"]["id"],
+                "name": subject,
                 // TODO: redo the "tasks" to be the tasks that we get from the ticket
                 "tasks": tasks,
                 "createdOn": self.parse_raw_date(ticket["ticket"]["created_at"].as_str().unwrap()), 
@@ -186,6 +199,40 @@ impl FreshAPI{
     }
 
 
+    pub fn close_ticket_task(&mut self, ticket_id: i32, task_id: i32) {
+
+        let raw_data: Value = self.read_ticket_file(ticket_id);
+
+        // Go thru the tasks and close all tasks up until the current one        
+        for(key, value) in raw_data.as_object().unwrap() {
+            if key == "tasks" {
+                for task in value.as_array().unwrap() {
+                    if task["id"].as_i64().unwrap() as i32 <= task_id {
+                        let request_url = format!("{0}/api/v2/tickets/{1}/tasks/{2}", self.domain, ticket_id, task["id"].as_i64().unwrap() as i32);
+                        println!("Task URL: {:#?}", request_url);
+                    }
+                    else {
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+        //requests::ticket_put_request(self.api_key.to_string(), request_url, data)
+    }
+
+
+    fn read_ticket_file(&mut self, ticket_id: i32) -> Value{
+        let file_name = format!("{0}.json", ticket_id);
+        let file_path: String = dirs::XdgDirs::append_to_path(&self.xdg_dirs.data_dir, &file_name).into_os_string().into_string().unwrap();
+        let mut file = File::open(file_path).unwrap();
+        let mut str = String::new();
+        file.read_to_string(&mut str).unwrap();
+        let data = serde_json::Value::from_str(str.as_str()).unwrap();
+        data
+    }
+
+
     // Agent Parsing
     fn parse_agents(&mut self){
         let url = self.domain.to_string() + "/api/v2/agents/?query=\"department_id:19000169805\"";
@@ -197,4 +244,6 @@ impl FreshAPI{
         }
         self.agent_dict = agents;
     }
+
+
 }

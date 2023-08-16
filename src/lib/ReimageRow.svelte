@@ -6,6 +6,7 @@
     const id = writable("");
     const date = writable("");
     const assigned = writable("");
+    const name = writable("");
 
 
     function updateTicket(){
@@ -13,6 +14,7 @@
         tasks.set(ticket.tasks);
         date.set(ticket.createdOn);
         assigned.set(ticket.assignedTo);
+        name.set(ticket.name);
         $tasks.forEach(task => {
             console.log(task.status);
             if (task.status != 1) {
@@ -28,7 +30,7 @@
 
 <tr>
     <td><input type="checkbox" name= "{$id}-cb" value="check"/></td>
-    <td>INC-{$id}</td>
+    <td>{$name}</td>
     <td>
         <select name="{$id}-tasks">
             {#each ticket.tasks as task}
