@@ -1,13 +1,18 @@
-<script type="ts">
+<script>
     import {invoke} from "@tauri-apps/api";
+    import { createEventDispatcher } from "svelte";
 
-    export let updateTickets
-
+    const dispatch = createEventDispatcher();    
+    function checkTasks() {
+        dispatch("tasks", {
+            text: "Check your tasks!"
+        });
+    }
     
 </script>
 
 <div class="TicketButton">
-    <button type="button" on:click={updateTickets}> Update Tickets</button>
+    <button type="button" on:click={checkTasks}> Update Tickets</button>
 </div>
 
 <style lang="css">

@@ -33,10 +33,7 @@ impl FreshAPI{
         new_api_obj.get_credentials();
         new_api_obj.parse_agents();
 
-        // Close_ticket_task testing
-        /*
-            For actual product, will get ticket_id & task_id from frontend
-         */
+
         return new_api_obj;
     }
 
@@ -126,6 +123,7 @@ impl FreshAPI{
         let file_name = format!("{0}.json", ticket["ticket"]["id"].as_i64().unwrap());
         let file_path: String = dirs::XdgDirs::append_to_path(&self.xdg_dirs.data_dir, &file_name).into_os_string().into_string().unwrap();
         let tasks: Vec<serde_json::Value> = self.get_tasks(ticket["ticket"]["id"].as_i64().unwrap() as i32);
+        
         let agent_id = ticket["ticket"]["responder_id"].as_i64().unwrap() as i32;
         let agent_name = self.agent_dict.get(&agent_id).unwrap().to_string();
 
@@ -206,7 +204,8 @@ impl FreshAPI{
         for(key, value) in raw_data.as_object().unwrap() {
             if key == "tasks" {
                 for task in value.as_array().unwrap() {
-                    if task["id"].as_i64().unwrap() as i32 <= task_id {
+                    let id = task["id"].as_i64().unwrap() as i32;
+                    if id < task_id {
                         let request_url = format!("{0}/api/v2/tickets/{1}/tasks/{2}", self.domain, ticket_id, task["id"].as_i64().unwrap() as i32);
                         let put_json = json!(
                             {

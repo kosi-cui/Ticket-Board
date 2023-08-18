@@ -3,7 +3,7 @@
 
     // Rust API
     import { invoke } from "@tauri-apps/api";
-    import { onMount} from "svelte";
+    import { onMount, createEventDispatcher } from "svelte";
     import { writable } from "svelte/store";
 
     // Svelte Components
@@ -43,19 +43,23 @@
 
 
 
-    const updateTasks = async() => { 
-      console.log("Updating Tasks");
-      // Need to pass in ticketId and taskId from updated tickets instead of hard coded
-      await invoke("close_ticket_task", {ticketId: 22027, taskId: 1410});
-      await updateTickets();
-    }
+
 
     export const tickets = writable([]);
 
     onMount(async () => {
       await updateTickets();
-      console.log(tickets);
     });
+
+    const dispatch = createEventDispatcher();
+
+    let reimagetableComp;
+
+    function listen(event){
+      console.log("Button pressed");
+      reimagetableComp.testListen();      
+    }
+
 </script>
 
 
@@ -73,7 +77,7 @@
         {#await onMount}
           <p>Fetching tickets...</p>
         {:then ticket}
-          <ReimageTable tickets={$tickets} />
+          <ReimageTable tickets={$tickets} bind:this={reimagetableComp} on:update = {updateTickets}/>
         {:catch error}
           <p>Something went wrong: {error.message}</p>
         {/await}
@@ -83,7 +87,7 @@
 
     <img class="cui-logo-icon" alt="" src={cuiLogo} />
 </div>
-<TicketButton updateTickets = {updateTasks}/>
+<TicketButton on:tasks = {listen}/>
 <div class="EefIcon">
     <img alt="" src={eeficon} height="48px" width="48px" />
 </div>

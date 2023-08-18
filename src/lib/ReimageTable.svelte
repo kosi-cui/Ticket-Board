@@ -3,7 +3,6 @@
     import { writable } from "svelte/store";
 
     import ReimageRow from "./ReimageRow.svelte";
-	import { tick } from "svelte";
 
     const tempTasks = 
     [
@@ -27,36 +26,16 @@
 
     function convertTickets(ticketInput){
         ticketArray.set(ticketInput);
-        console.log($ticketArray);
     }
-    // export let tickets = [
-    //   {
-    //     id: "0001",
-    //     tasks: tempTasks,
-    //     createdOn: "01/01/2021",
-    //     assignedTo: "John Doe"
-    //   },
-    //   {
-    //     id: "0002",
-    //     tasks: tempTasks,
-    //     createdOn: "01/01/2021",
-    //     assignedTo: "John Doe"
-    //   },
-    // {
-    //     id: "0003",
-    //     tasks: tempTasks,
-    //     createdOn: "01/01/2021",
-    //     assignedTo: "John Doe"
-    //   },
-    //   {
-    //     id: "0004",
-    //     tasks: tempTasks,
-    //     createdOn: "01/01/2021",
-    //     assignedTo: "John Doe"
-    //   }
-    // ]
 
     $: tickets && convertTickets(tickets);
+    let trigger = false;
+
+    export function testListen(event){
+        console.log("testListen");
+        trigger = !trigger;
+    }
+
 </script>
 
 
@@ -75,7 +54,7 @@
       {#await tickets}
       {:then tickets}
        {#each tickets as ticket}
-          <ReimageRow ticket={ticket}/>
+          <ReimageRow ticket={ticket} updateTrigger={trigger} on:update/>
         {/each}
       {/await}
     </tbody>
