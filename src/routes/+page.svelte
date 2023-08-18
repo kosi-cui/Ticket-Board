@@ -41,6 +41,15 @@
       return output;
     }
 
+
+
+    const updateTasks = async() => { 
+      console.log("Updating Tasks");
+      // Need to pass in ticketId and taskId from updated tickets instead of hard coded
+      await invoke("close_ticket_task", {ticketId: 22027, taskId: 1410});
+      await updateTickets();
+    }
+
     export const tickets = writable([]);
 
     onMount(async () => {
@@ -74,7 +83,7 @@
 
     <img class="cui-logo-icon" alt="" src={cuiLogo} />
 </div>
-<TicketButton updateTickets = {updateTickets}/>
+<TicketButton updateTickets = {updateTasks}/>
 <div class="EefIcon">
     <img alt="" src={eeficon} height="48px" width="48px" />
 </div>

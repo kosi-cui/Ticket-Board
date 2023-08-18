@@ -2,6 +2,8 @@
     import {invoke} from "@tauri-apps/api";
 
     export let updateTickets
+
+    
 </script>
 
 <div class="TicketButton">

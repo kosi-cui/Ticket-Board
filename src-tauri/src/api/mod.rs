@@ -37,7 +37,6 @@ impl FreshAPI{
         /*
             For actual product, will get ticket_id & task_id from frontend
          */
-        new_api_obj.close_ticket_task(22027, 1410);
         return new_api_obj;
     }
 
@@ -209,7 +208,15 @@ impl FreshAPI{
                 for task in value.as_array().unwrap() {
                     if task["id"].as_i64().unwrap() as i32 <= task_id {
                         let request_url = format!("{0}/api/v2/tickets/{1}/tasks/{2}", self.domain, ticket_id, task["id"].as_i64().unwrap() as i32);
-                        println!("Task URL: {:#?}", request_url);
+                        let put_json = json!(
+                            {
+                                "status": 3,
+                                "notify_before": 0,
+                                "title": task["title"],
+                                "description": task["description"]
+                            }
+                        );
+                        requests::ticket_put_request(self.api_key.to_string(), request_url, put_json);
                     }
                     else {
                         break;
@@ -218,7 +225,11 @@ impl FreshAPI{
                 break;
             }
         }
-        //requests::ticket_put_request(self.api_key.to_string(), request_url, data)
+
+        // Then we need to delete the ticket file so we can get the updated information
+        let file_name = format!("{0}.json", ticket_id);
+        let file_path: String = dirs::XdgDirs::append_to_path(&self.xdg_dirs.data_dir, &file_name).into_os_string().into_string().unwrap();
+        std::fs::remove_file(file_path).unwrap();
     }
 
 
