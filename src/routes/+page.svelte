@@ -3,6 +3,7 @@
 
     // Rust API
     import { invoke } from "@tauri-apps/api";
+    import { listen } from "@tauri-apps/api/event";
     import { onMount, createEventDispatcher } from "svelte";
     import { writable } from "svelte/store";
 
@@ -41,6 +42,19 @@
       return output;
     }
 
+    const cleanTicketUpdate = async () => {
+      let output = await invoke("clean_ticket_update")
+        .then((ticketArray) =>
+        {
+          tickets.set(ticketArray);
+          showLoading = false;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      return output;
+    }
+
 
 
 
@@ -48,17 +62,22 @@
     export const tickets = writable([]);
 
     onMount(async () => {
-      await updateTickets();
+      await cleanTicketUpdate();
     });
 
     const dispatch = createEventDispatcher();
 
     let reimagetableComp;
 
-    function listen(event){
+    function customListen(event){
       console.log("Button pressed");
       reimagetableComp.testListen();      
     }
+
+    const listener = listen("backend-update-tickets", (event) => {
+      console.log("Event received");
+      console.log(event);
+    });
 
 </script>
 
@@ -87,13 +106,24 @@
 
     <img class="cui-logo-icon" alt="" src={cuiLogo} />
 </div>
-<TicketButton on:tasks = {listen}/>
+<TicketButton on:tasks = {customListen}/>
 <div class="EefIcon">
     <img alt="" src={eeficon} height="48px" width="48px" />
 </div>
 
 
 <style>
+  @font-face {
+    font-family: 'Gandhi-Sans';
+    src: url('./GandhiSans-Regular.otf'),
+        url('./assets/fonts/GandhiSans-Regular.woff') format('woff'),;
+    font-weight: 399;
+    font-style: normal;
+}
+
+
+
+
     .EefIcon{
         position: absolute;
         bottom: 0;
@@ -127,6 +157,7 @@
   border-top: 1px solid #ccd0d4;
   box-sizing: border-box;
   height: 3px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .p-base-inner {

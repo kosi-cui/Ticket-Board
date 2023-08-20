@@ -4,8 +4,8 @@
 use api::FreshAPI;
 mod api;
 
-use tauri::{ command, State, Window };
-use serde::{Deserialize, Serialize};
+use tauri::{ command, Manager };
+use serde_json::Value;
 
 
 #[command]
@@ -14,7 +14,7 @@ fn greet(name: &str) -> String {
 }
 
 #[command]
-fn update_tickets() -> Vec<serde_json::Value>{
+fn update_tickets() -> Vec<Value>{
   let mut api_obj : FreshAPI = api::FreshAPI::new();
   let ticket_jsons = api_obj.get_reimage_tickets();
   //api_obj.close_ticket_task(22027, 1410);
@@ -30,6 +30,14 @@ fn close_ticket_task(ticket_id: i32, task_id: i32){
   update_tickets();
 }
 
+#[command]
+fn clean_ticket_update() -> Vec<Value> {
+  let mut api_obj : FreshAPI = api::FreshAPI::new();
+  let output = api_obj.clean_get_tickets();
+  println!("{:#?}", output);
+  output
+}
+
 
 fn main() {
   let is_debug: bool = false;
@@ -39,7 +47,18 @@ fn main() {
     return;
   }
   tauri::Builder::default()
-  .invoke_handler(tauri::generate_handler![greet, update_tickets, close_ticket_task])
+  .setup(|app| {
+    let app_handle = app.app_handle();
+    tauri::async_runtime::spawn(async move {
+      loop {
+        tokio::time::sleep(tokio::time::Duration::from_secs(60)).await;
+        app_handle.emit_all("backend-update-tickets", "updatePing").unwrap();
+        println!("updatePing");
+      }
+    });
+    Ok(())
+  })
+  .invoke_handler(tauri::generate_handler![greet, update_tickets, close_ticket_task, clean_ticket_update])
   .run(tauri::generate_context!())
   .expect("error while running tauri application");
 }

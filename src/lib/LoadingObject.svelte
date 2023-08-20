@@ -6,6 +6,7 @@
 <div id="loader" class="p-base-item" >
 </div>
 
+
 <style lang="css">
 #loader {
     position: absolute;

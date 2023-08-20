@@ -49,4 +49,12 @@ impl XdgDirs{
         p.push(s);
         p
     }
+
+    pub fn clear_data_dir(&mut self) -> std::io::Result<()> {
+        let path = &self.data_dir;
+        for entry in std::fs::read_dir(path)? {
+            std::fs::remove_file(entry?.path())?;
+        }
+        Ok(())
+    }
 }

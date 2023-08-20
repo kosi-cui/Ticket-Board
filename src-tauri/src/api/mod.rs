@@ -101,6 +101,12 @@ impl FreshAPI{
         return ticket_json;
     }
 
+    pub fn clean_get_tickets(&mut self) -> Vec<Value> {
+        self.xdg_dirs.clear_data_dir().unwrap();
+        println!("Cleared data dir");
+        self.get_reimage_tickets()
+    }
+
 
     fn get_tasks(&mut self, id: i32) -> Vec<serde_json::Value> {
         let mut tasks: Vec<serde_json::Value> = Vec::new();
