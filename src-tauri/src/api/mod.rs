@@ -135,13 +135,14 @@ impl FreshAPI{
 
         let temp_name = ticket["ticket"]["subject"].to_string();
         let ticket_name: Vec<&str> = temp_name.split(" - ").collect();
-        let subject = ticket_name[1];
+        let ticket_num = ticket["ticket"]["id"].as_i64().unwrap().to_string();
+        println!("Ticket Num: {0}", ticket_num);
+        let subject = "#INC-".to_string() + &ticket_num + &" | ".to_string() + ticket_name[1];
 
         let _shortned_ticket = json!(
             {
                 "id": ticket["ticket"]["id"],
                 "name": subject,
-                // TODO: redo the "tasks" to be the tasks that we get from the ticket
                 "tasks": tasks,
                 "createdOn": self.parse_raw_date(ticket["ticket"]["created_at"].as_str().unwrap()), 
                 "assignedTo": agent_name, // This line we will need to convert the assigned_id to the Map of the agents in the helpdesk

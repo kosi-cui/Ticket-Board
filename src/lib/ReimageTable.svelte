@@ -39,6 +39,7 @@
 </script>
 
 
+
 <table id="ReimageTable">
     <thead>
         <tr>
@@ -61,16 +62,28 @@
 </table>
 
 
+
 <style>
 
 table {
   visibility: visible;
   border-collapse: collapse;
-  width: 90%;
+  width: 1800px;
   margin-left: 10%;
   margin-top: 3%;
   font-size: 16px;
-  font-family: 'Gandhi-Sans', 'Times New Roman', Times, serif;
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-y: scroll;
+  overflow-x: scroll;
+  display: block;
+  position: absolute;
+  top: 5%;
+  left: -5%;
+}
+
+:global(th:nth-child(1), th:nth-child(2), th:nth-child(3), th:nth-child(4), th:nth-child(5)
+        td:nth-child(1), td:nth-child(2), td:nth-child(3), td:nth-child(4), td:nth-child(5)) {
+  width: 445px;
 }
 
 table th:first-child {
@@ -90,7 +103,10 @@ thead {
 th {
   position: sticky;
   border-right: solid #cfd7df 2px;
+  height: 40px;
+  font-size: large;
+  font-family: Arial, Helvetica, sans-serif;
+  width: auto;
 }
-
 
 </style>

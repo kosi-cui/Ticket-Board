@@ -51,7 +51,7 @@ fn main() {
     let app_handle = app.app_handle();
     tauri::async_runtime::spawn(async move {
       loop {
-        tokio::time::sleep(tokio::time::Duration::from_secs(60)).await;
+        tokio::time::sleep(tokio::time::Duration::from_secs(60 * 60)).await;
         app_handle.emit_all("backend-update-tickets", "updatePing").unwrap();
         println!("updatePing");
       }

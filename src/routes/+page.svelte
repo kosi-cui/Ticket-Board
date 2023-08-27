@@ -15,7 +15,6 @@
     // Images/Assets
     import eeficon from "$lib/assets/eeficon@2x.png"
     import cuiLogo from "$lib/assets/cui-logo@2x.png"
-    import "$lib/fonts.css"
 
     // Variables
     let showLoading = true;
@@ -43,6 +42,8 @@
     }
 
     const cleanTicketUpdate = async () => {
+      console.log("Clean Ticket Update");
+      showLoading = true;
       let output = await invoke("clean_ticket_update")
         .then((ticketArray) =>
         {
@@ -54,9 +55,6 @@
         });
       return output;
     }
-
-
-
 
 
     export const tickets = writable([]);
@@ -75,9 +73,14 @@
     }
 
     const listener = listen("backend-update-tickets", (event) => {
-      console.log("Event received");
-      console.log(event);
+      console.log("Backend update tickets event received");
+      cleanTicketUpdate();
     });
+
+
+    function showGithub() {
+      window.open("https://github.com/eef-g", "_blank");
+    }
 
 </script>
 
@@ -86,49 +89,59 @@
     <div class="p-base-title">
         <h1>In-Progress Reimages</h1>
     </div>
-    <div class="p-base-item"></div>
+    <div class="p-base-item" id="bar"></div>
     {#if showLoading}
       <LoadingObject />
     {/if}
-    <div class="p-base-item">
-
-      {#if !showLoading}
-        {#await onMount}
-          <p>Fetching tickets...</p>
-        {:then ticket}
-          <ReimageTable tickets={$tickets} bind:this={reimagetableComp} on:update = {updateTickets}/>
-        {:catch error}
-          <p>Something went wrong: {error.message}</p>
-        {/await}
-      {/if}
-    </div>
+    {#if !showLoading}
+      {#await onMount}
+        <p>Fetching tickets...</p>
+      {:then ticket}
+        <ReimageTable tickets={$tickets} bind:this={reimagetableComp} on:update = {updateTickets}/>
+      {:catch error}
+        <p>Something went wrong: {error.message}</p>
+      {/await}
+    {/if}
     <div class="p-base-inner"></div>
 
     <img class="cui-logo-icon" alt="" src={cuiLogo} />
 </div>
 <TicketButton on:tasks = {customListen}/>
-<div class="EefIcon">
+<div class="EefIcon" on:click={showGithub}>
     <img alt="" src={eeficon} height="48px" width="48px" />
+    <div class="hidden">Made By Ethan Gray</div>
 </div>
 
 
 <style>
-  @font-face {
-    font-family: 'Gandhi-Sans';
-    src: url('./GandhiSans-Regular.otf'),
-        url('./assets/fonts/GandhiSans-Regular.woff') format('woff'),;
-    font-weight: 399;
-    font-style: normal;
-}
-
-
-
-
     .EefIcon{
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        margin-left: .5%;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      margin-left: .5%;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .EefIcon:hover .hidden {
+      display: block;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      margin-left: 2%;
+      margin-bottom: 2%;
+      background-color: #004c23;
+      color: white;
+      border-radius: 5px;
+      padding: 5px;
+      font-size: 12px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .EefIcon:hover {
+      cursor: pointer;
     }
 
     @keyframes shadow-pop-tr {
@@ -157,7 +170,7 @@
   border-top: 1px solid #ccd0d4;
   box-sizing: border-box;
   height: 3px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .p-base-inner {
@@ -189,7 +202,7 @@
   text-align: left;
   font-size: var(--font-size-mini);
   color: var(--color-black);
-  font-family: "Gandhi-Sans", 'Times New Roman', Times, serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .p-base-title{
@@ -197,11 +210,23 @@
 }
 
 .p-base-title h1{
-  font-family: 'Gandhi-Sans';
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 24px;
   font-weight: 600;
   margin-top: 1%;
   margin-bottom: 1%;
   color: #313538;
+  position: absolute;
+  top: 2%
 }
+
+#bar {
+  position: absolute;
+  top: 8%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #ccd0d4;
+}
+
 </style>

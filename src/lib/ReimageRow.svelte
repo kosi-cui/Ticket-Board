@@ -1,5 +1,4 @@
 <script>
-    import "$lib/fonts.css"
     import { invoke } from "@tauri-apps/api";
     import { writable } from "svelte/store";
     import { createEventDispatcher } from "svelte";
@@ -89,7 +88,9 @@
 
     tr{
         border-bottom: solid #ebeff3 .25px;
-        font-family: 'Gandhi-Sans', sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: large;
+        height: 40px;
     }
 
     select {
@@ -97,6 +98,11 @@
         background-color: white;
         box-shadow: 0 0 0 0 white;
         text-align: left;
-        font-family: 'Gandhi-Sans', sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: large;
+    }
+
+    input {
+        size: 2rem;
     }
 </style>
