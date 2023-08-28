@@ -43,7 +43,7 @@
 <table id="ReimageTable">
     <thead>
         <tr>
-            <th> </th>
+            <th>&nbsp;</th>
             <th>&nbsp;Subject</th>
             <th>&nbsp;Step</th>
             <th>&nbsp;Date Created</th>

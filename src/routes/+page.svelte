@@ -11,6 +11,7 @@
     import TicketButton from "$lib/TicketButton.svelte"
     import ReimageTable from "$lib/ReimageTable.svelte"
     import LoadingObject from "$lib/LoadingObject.svelte"
+    import SettingsMenu from "$lib/SettingsMenu.svelte";
 
     // Images/Assets
     import eeficon from "$lib/assets/eeficon@2x.png"
@@ -18,13 +19,12 @@
 
     // Variables
     let showLoading = true;
+    let validCredentials = false;
+    let showSettings = false;
+    let bootUp = true;
 
-    // Example Function Call w/ Rust API
-    // let name = "";
-    // let output = "";
-    // async function greet() {
-    //     output = await invoke("greet", {name});
-    // }
+    export const credentials = writable({});
+
 
 
     const updateTickets = async () => {
@@ -47,6 +47,21 @@
       let output = await invoke("clean_ticket_update")
         .then((ticketArray) =>
         {
+          if(ticketArray.length == 1)
+          {
+            if(ticketArray[0]["title"] == "Invalid Credentials")
+            {
+              validCredentials = false;
+            }
+            else
+            {
+              validCredentials = true;
+            }
+          }
+          else
+          {
+            validCredentials = true;
+          }
           tickets.set(ticketArray);
           showLoading = false;
         })
@@ -56,11 +71,25 @@
       return output;
     }
 
+    const getCredentials = async () => {
+      let output = await invoke("get_credentials")
+        .then((creds) =>
+        {
+          console.log(creds);
+          credentials.set(creds);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      return output;
+    }
 
     export const tickets = writable([]);
 
     onMount(async () => {
+      await getCredentials();
       await cleanTicketUpdate();
+      bootUp = false;
     });
 
     const dispatch = createEventDispatcher();
@@ -82,6 +111,18 @@
       window.open("https://github.com/eef-g", "_blank");
     }
 
+    function toggleSettings() {
+      showSettings = !showSettings;
+    }
+
+    async function credentialsListen(event) {
+      showLoading = true;
+      validCredentials = true;
+      showSettings = false;
+      await invoke("update_credentials", {apiKey: event.detail.key, domain: event.detail.domain});
+      showLoading = false;
+    }
+
 </script>
 
 
@@ -89,31 +130,103 @@
     <div class="p-base-title">
         <h1>In-Progress Reimages</h1>
     </div>
+    <div class="settings-button">
+      <button type="button" on:click = {toggleSettings}>⚙</button>
+    </div>
     <div class="p-base-item" id="bar"></div>
     {#if showLoading}
       <LoadingObject />
     {/if}
     {#if !showLoading}
-      {#await onMount}
-        <p>Fetching tickets...</p>
-      {:then ticket}
-        <ReimageTable tickets={$tickets} bind:this={reimagetableComp} on:update = {updateTickets}/>
-      {:catch error}
-        <p>Something went wrong: {error.message}</p>
-      {/await}
+      {#if bootUp}
+        {#await onMount}
+          <p>Fetching tickets...</p>
+        {:then ticket}
+
+          {#if validCredentials}
+          <ReimageTable tickets={$tickets} bind:this={reimagetableComp} on:update = {updateTickets}/>
+          {/if}
+          {#if !validCredentials}
+          <div class="p-invalid-warning">
+            <h1>ERROR: Invalid Credentials!</h1>
+            <p> Please press the gear icon to configure your settings.</p>
+          </div>
+          {/if}
+        {:catch error}
+          <p>Something went wrong: {error.message}</p>
+        {/await}
+      {/if}
+      {#if !bootUp}
+          {#if validCredentials}
+            <ReimageTable tickets={$tickets} bind:this={reimagetableComp} on:update = {updateTickets}/>
+          {:else}
+            <div class="p-invalid-warning">
+              <h1>ERROR: Invalid Credentials!</h1>
+              <p> Please press the gear icon to configure your settings.</p>
+            </div>
+          {/if}
+      {/if}
     {/if}
     <div class="p-base-inner"></div>
 
     <img class="cui-logo-icon" alt="" src={cuiLogo} />
-</div>
+  </div>
+{#if !showLoading}
 <TicketButton on:tasks = {customListen}/>
+{/if}
 <div class="EefIcon" on:click={showGithub}>
     <img alt="" src={eeficon} height="48px" width="48px" />
     <div class="hidden">Made By Ethan Gray</div>
 </div>
+{#if showSettings}
+<SettingsMenu credentials={$credentials} on:credentials={credentialsListen}/>
+{/if}
 
 
 <style>
+    .settings-button{
+      position: absolute;
+      top: 1.5%;
+      right: 2%;
+      size: 32px;
+    }
+
+    .settings-button button{
+      background-color: #004c23;
+      color: white;
+      border: none;
+      border-radius: 10px 10px 10px 10px;
+      padding: 1vh 1.6vh;
+      font-size: 20px;
+      box-shadow: 0 7px #999;
+    }
+
+    .settings-button button:hover{
+      background-color: #003012;
+    }
+
+    .settings-button button:active{
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+    }
+
+    .p-invalid-warning{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .p-invalid-warning h1{
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 32px;
+      font-weight: 600;
+      margin-top: 1%;
+      margin-bottom: 1%;
+      color: #313538;
+    }
+
     .EefIcon{
       position: absolute;
       bottom: 0;

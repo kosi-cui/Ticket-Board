@@ -18,6 +18,7 @@ pub struct FreshAPI{
     pub xdg_dirs: dirs::XdgDirs,
     pub ticket_ids: Vec<i32>,
     pub agent_dict: HashMap<i32, String>,
+    pub valid_creds: bool,
 }
 
 // Implementation of FreshAPI
@@ -29,43 +30,50 @@ impl FreshAPI{
             xdg_dirs: dirs::XdgDirs::new(),
             ticket_ids: Vec::new(),
             agent_dict: HashMap::new(),
+            valid_creds: false,
         };
+
         new_api_obj.get_credentials();
-        new_api_obj.parse_agents();
-
-
+        
+        if new_api_obj.valid_creds {
+            new_api_obj.parse_agents();
+        }
         return new_api_obj;
     }
 
 
     pub fn get_credentials(&mut self){
         if !self.xdg_dirs.check_file_exists("conf"){
-            println!("No conf file found, creating one...");
-
-            // Get credentials from user
-            println!("Please enter your Freshservice API key:");
-            let mut temp_key : String = String::new();
-            std::io::stdin().read_line(&mut temp_key).unwrap();
-            println!("Please enter your Freshservice domain (Example: cuihelpdesk):");
-            let mut temp_domain : String = String::new();
-            std::io::stdin().read_line(&mut temp_domain).unwrap();
-            temp_domain = "https://".to_string() + &temp_domain.trim_end().to_string() + ".freshservice.com";
-            self.api_key = temp_key.trim_end().to_string();
-            self.domain = temp_domain.trim_end().to_string();
-
             // Create conf file
             let _ = self.create_conf_file();
         }
         else {
             self.read_conf_file().unwrap();
+            if self.api_key.len() < 5 || self.domain.len() < 5 {
+                self.valid_creds = false;
+            }
+            else {
+                self.valid_creds = true;
+            }
         }
     }
 
+    pub fn update_credentials(&mut self, api_key: String, domain: String){
+        self.api_key = api_key;
+        self.domain = domain;
+        self.valid_creds = true;
+        
+        // Create conf file then update the api object just in case
+        let _ = self.create_conf_file();
+        self.parse_agents();
+        self.clean_get_tickets();
+    }
 
-    fn create_conf_file(&mut self) -> std::io::Result<()>{
+
+    pub fn create_conf_file(&mut self) -> std::io::Result<()>{
         let file_path: String = dirs::XdgDirs::append_to_path(&self.xdg_dirs.config_dir, "conf").into_os_string().into_string().unwrap();
         let mut file = File::create(file_path)?;
-        file.write_all(format!("{0}\n{1}", self.api_key, self.domain).as_bytes())?;
+        file.write_all(format!("#Write your API key below:\n{0}\n#Write your helpdesk domain below (Ex: mvhshelpdesk.freshservice.com):\n{1}", self.api_key, self.domain).as_bytes())?;
         Ok(())
     }
 
@@ -76,8 +84,8 @@ impl FreshAPI{
         let mut contents = String::new();
         file.read_to_string(&mut contents)?;
         let contents: Vec<&str> = contents.split("\n").collect();
-        self.api_key = contents[0].to_string();
-        self.domain = contents[1].to_string();
+        self.api_key = contents[1].to_string();
+        self.domain = contents[3].to_string();
         Ok(())
     }
 
@@ -121,6 +129,28 @@ impl FreshAPI{
             }
         }
 
+        if tasks.len() == 0 {
+            tasks.push(json!
+                (
+                    {
+                        "agent_id": null,
+                        "closed_at": null,
+                        "created_at": "2023-08-18T22:26:07Z",
+                        "custom_fields": {},
+                        "deleted": false,
+                        "description": "\n<p>The task sequence has not been run yet.<br></p>\n",
+                        "due_date": "2023-09-01T22:26:07Z",
+                        "group_id": null,
+                        "id": 0,
+                        "notify_before": 0,
+                        "status": 1,
+                        "title": "Execute Reimage Task Sequence Scenario",
+                        "updated_at": "2023-08-18T22:26:07Z",
+                        "workspace_id": 2
+                    }
+                ));
+        }
+
         return tasks;
     }
 
@@ -130,9 +160,21 @@ impl FreshAPI{
         let file_path: String = dirs::XdgDirs::append_to_path(&self.xdg_dirs.data_dir, &file_name).into_os_string().into_string().unwrap();
         let tasks: Vec<serde_json::Value> = self.get_tasks(ticket["ticket"]["id"].as_i64().unwrap() as i32);
         
-        let agent_id = ticket["ticket"]["responder_id"].as_i64().unwrap() as i32;
-        let agent_name = self.agent_dict.get(&agent_id).unwrap().to_string();
+        let mut agent_id: i32 = 0;
+        let mut agent_name: String = String::new();
+        if ticket["ticket"]["responder_id"].is_i64() {
+            agent_id = ticket["ticket"]["responder_id"].as_i64().unwrap() as i32;
+            agent_name = self.agent_dict.get(&agent_id).unwrap().to_string();
+        }
+        else {
+            agent_name = "Unassigned".to_string();
+        }
 
+        //let agent_id = ticket["ticket"]["responder_id"].as_i64().unwrap() as i32;
+
+        //let agent_name = self.agent_dict.get(&agent_id).unwrap().to_string();
+        
+        
         let temp_name = ticket["ticket"]["subject"].to_string();
         let ticket_name: Vec<&str> = temp_name.split(" - ").collect();
         let ticket_num = ticket["ticket"]["id"].as_i64().unwrap().to_string();

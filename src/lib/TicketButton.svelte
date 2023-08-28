@@ -1,5 +1,4 @@
 <script>
-    import {invoke} from "@tauri-apps/api";
     import { createEventDispatcher } from "svelte";
 
     const dispatch = createEventDispatcher();    

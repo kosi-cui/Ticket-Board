@@ -25,7 +25,7 @@
                 $tasks.splice($tasks.indexOf(task), 1);
             }
         });
-        if($tasks.length > 1) {
+        if($tasks.length > 0) {
             Object.entries(Object.values($tasks)).forEach(task => {
                 Object.values(task).forEach(element => {
                     if(element["title"] != undefined)
@@ -42,7 +42,7 @@
             return;
         Object.entries(Object.values($tasks)).forEach(task => {
                 Object.values(task).forEach(element => {
-                    if(element["title"] != undefined && element["title"] == selectedTask)
+                    if(element["title"] != undefined && element["title"] == selectedTask && element["id"] != 0)
                     {
                         console.log("Closing tasks up to: " + element["id"]);
                         invoke("close_ticket_task", {ticketId: $id, taskId: element["id"]});   
