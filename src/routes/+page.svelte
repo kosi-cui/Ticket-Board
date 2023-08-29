@@ -25,15 +25,23 @@
 
     export const credentials = writable({});
 
+    let resolvedTickets = [];
 
 
-    const updateTickets = async () => {
+
+    const updateTickets = async (event) => {
+      if (event.detail.resolved != -1)
+      {
+        resolvedTickets.push(event.detail.resolved);
+      }
       showLoading = true;
-      let output = await invoke("update_tickets")
+      console.log(resolvedTickets);
+      let output = await invoke("update_tickets", {skip: resolvedTickets})
         .then((ticketArray) =>
         {
           tickets.set(ticketArray);
           showLoading = false;
+          resolvedTickets = [];
         })
         .catch((err) => {
           console.log(err);
@@ -42,9 +50,8 @@
     }
 
     const cleanTicketUpdate = async () => {
-      console.log("Clean Ticket Update");
       showLoading = true;
-      let output = await invoke("clean_ticket_update")
+      let output = await invoke("clean_ticket_update", {skip: resolvedTickets})
         .then((ticketArray) =>
         {
           if(ticketArray.length == 1)

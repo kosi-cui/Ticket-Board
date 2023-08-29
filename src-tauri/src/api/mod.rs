@@ -66,7 +66,8 @@ impl FreshAPI{
         // Create conf file then update the api object just in case
         let _ = self.create_conf_file();
         self.parse_agents();
-        self.clean_get_tickets();
+        let skipper: Vec<i32> = Vec::new();
+        self.clean_get_tickets(skipper);
     }
 
 
@@ -109,9 +110,9 @@ impl FreshAPI{
         return ticket_json;
     }
 
-    pub fn clean_get_tickets(&mut self) -> Vec<Value> {
+    pub fn clean_get_tickets(&mut self, resolved_ids: Vec<i32>) -> Vec<Value> {
         self.xdg_dirs.clear_data_dir().unwrap();
-        self.get_reimage_tickets()
+        self.get_reimage_tickets(resolved_ids)
     }
 
 
@@ -218,8 +219,14 @@ impl FreshAPI{
     }
 
 
-    pub fn get_reimage_tickets(&mut self) -> Vec<serde_json::Value> {
-        let ticket_nums: Vec<i32> = self.get_reimage_ticket_ids("status:2 AND tag:\'Reimage\'");
+    pub fn get_reimage_tickets(&mut self, resolved: Vec<i32>) -> Vec<serde_json::Value> {
+        let mut ticket_nums: Vec<i32> = self.get_reimage_ticket_ids("status:2 AND tag:\'Reimage\'");
+        for id in resolved.iter() {
+            if ticket_nums.contains(id) {
+                let index = ticket_nums.iter().position(|&r| r == *id).unwrap();
+                ticket_nums.remove(index);
+            }
+        }
         let mut tickets: Vec<serde_json::Value> = Vec::new();
         for id in ticket_nums.iter() {
             // If ticket is already downloaded, skip it
@@ -235,6 +242,7 @@ impl FreshAPI{
             tickets.push(new_ticket_json);
         }
         self.ticket_ids = ticket_nums;
+        println!("Ticket IDs: {:?}", self.ticket_ids);
         return tickets;
     }
 
@@ -307,8 +315,8 @@ impl FreshAPI{
                 "status": 4,
             }
         );
-        self.delete_ticket_json(ticket_id);
         requests::ticket_put_request(self.api_key.to_string(), url, put_json);
+        self.delete_ticket_json(ticket_id);
     }
 
     fn read_ticket_file(&mut self, ticket_id: i32) -> Value{

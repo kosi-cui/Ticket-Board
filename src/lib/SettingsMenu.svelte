@@ -61,7 +61,7 @@ const domainUpdate = (event) => {
     top: 6.8%;
     right: 32%;
     width: 30%;
-    height: 30%;
+    height: 36%;
     z-index: 100;
     transition: 0.5s;
     transform: translateX(100%);

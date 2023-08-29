@@ -47,7 +47,7 @@
             return; 
         if (finished) {
             console.log("Resolving ticket " + $id);
-            invoke("resolve_ticket", {ticketId: $id, agentId: ticket.agentId});
+            await invoke("resolve_ticket", {ticketId: $id, agentId: ticket.agentId});
         }
         else
         {  
@@ -56,13 +56,21 @@
                         if(element["title"] != undefined && element["title"] == selectedTask && element["id"] != 0)
                         {
                             invoke("close_ticket_task", {ticketId: $id, taskId: element["id"]});
-
                         }
                     });
                 });
         }
         await delay(2000);
-        dispatch("update");
+        if (finished)
+            dispatch("update",
+            {
+                resolved: $id,
+            });
+        else
+            dispatch("update", 
+        {
+            resolved: -1,
+        });
     }
 
     export let ticket;
@@ -70,10 +78,7 @@
 
 
     $: ticket && updateTicket();
-
     $: updateTrigger && closeTask();
-    $: finished && console.log(finished);
-    
 </script>
 
 <tr>

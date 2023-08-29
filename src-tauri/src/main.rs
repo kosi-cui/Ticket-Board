@@ -14,10 +14,10 @@ fn greet(name: &str) -> String {
 }
 
 #[command]
-fn update_tickets() -> Vec<Value>{
+fn update_tickets(skip: Vec<i32>) -> Vec<Value>{
   let mut api_obj : FreshAPI = api::FreshAPI::new();
   if api_obj.valid_creds {
-    let ticket_jsons = api_obj.get_reimage_tickets();
+    let ticket_jsons = api_obj.get_reimage_tickets(skip);
     ticket_jsons
   }
   else {
@@ -63,15 +63,16 @@ fn update_credentials(api_key: String, domain: String){
 fn close_ticket_task(ticket_id: i32, task_id: i32){
   let mut api_obj : FreshAPI = api::FreshAPI::new();
   api_obj.close_ticket_task(ticket_id, task_id);
-  update_tickets();
+  let skip: Vec<i32> = Vec::new();
+  update_tickets(skip);
 }
 
 #[command]
-fn clean_ticket_update() -> Vec<Value> {
+fn clean_ticket_update(skip: Vec<i32>) -> Vec<Value> {
   let mut api_obj : FreshAPI = api::FreshAPI::new();
   println!("Valid Creds: {}", api_obj.valid_creds);
   if api_obj.valid_creds {
-    let output = api_obj.clean_get_tickets();
+    let output = api_obj.clean_get_tickets(skip);
     output
   }
   else {
