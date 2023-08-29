@@ -100,6 +100,14 @@ impl FreshAPI{
     }
 
 
+    pub fn get_ticket_json(&mut self, id: i32) -> Value {
+        let ticket_url_addition = "/api/v2/tickets/".to_string() + &id.to_string();
+        let url = self.domain.to_string() + &ticket_url_addition;
+        let req = requests::ticket_get_request(self.api_key.to_string(), url);
+        let ticket_json: Value = serde_json::from_value(req).unwrap();
+        ticket_json
+    }
+
     pub fn get_ticket(&mut self, id: i32) -> serde_json::Value {
         let ticket_url_addition = "/api/v2/tickets/".to_string() + &id.to_string();
         let url = self.domain.to_string() + &ticket_url_addition;
@@ -111,7 +119,6 @@ impl FreshAPI{
 
     pub fn clean_get_tickets(&mut self) -> Vec<Value> {
         self.xdg_dirs.clear_data_dir().unwrap();
-        println!("Cleared data dir");
         self.get_reimage_tickets()
     }
 
@@ -178,12 +185,12 @@ impl FreshAPI{
         let temp_name = ticket["ticket"]["subject"].to_string();
         let ticket_name: Vec<&str> = temp_name.split(" - ").collect();
         let ticket_num = ticket["ticket"]["id"].as_i64().unwrap().to_string();
-        println!("Ticket Num: {0}", ticket_num);
         let subject = "#INC-".to_string() + &ticket_num + &" | ".to_string() + ticket_name[1];
 
         let _shortned_ticket = json!(
             {
                 "id": ticket["ticket"]["id"],
+                "agentId": agent_id,
                 "name": subject,
                 "tasks": tasks,
                 "createdOn": self.parse_raw_date(ticket["ticket"]["created_at"].as_str().unwrap()), 
@@ -275,11 +282,46 @@ impl FreshAPI{
         }
 
         // Then we need to delete the ticket file so we can get the updated information
+        self.delete_ticket_json(ticket_id);
+    }
+
+    pub fn delete_ticket_json(&mut self, ticket_id: i32) {
         let file_name = format!("{0}.json", ticket_id);
         let file_path: String = dirs::XdgDirs::append_to_path(&self.xdg_dirs.data_dir, &file_name).into_os_string().into_string().unwrap();
         std::fs::remove_file(file_path).unwrap();
     }
 
+    pub fn clock_labor(&mut self, ticket_id: i32, agent_id: i32) {
+        let entry_json: Value = json!(
+            {
+                "time_entry" :
+                {
+                    "time_spent": "0:01",
+                    "note": "Closed via Reimage Board -- General Labor Clock",
+                    "agent_id": agent_id,
+                }
+            }
+        );
+        let url = format!("{0}/api/v2/tickets/{1}/time_entries", self.domain, ticket_id);
+        println!("Clocking labor to ticket: {0} | URL: {1}", ticket_id, url);
+        requests::ticket_post_request(self.api_key.to_string(), url, entry_json);
+    }
+
+    pub fn close_ticket(&mut self, ticket_id: i32, agent_id: i32) {
+        println!("Agents: {:?}", self.agent_dict);
+        // First, we need to clock labor
+        self.clock_labor(ticket_id, agent_id);
+
+        // Then we need to close the ticket
+        let url = format!("{0}/api/v2/tickets/{1}", self.domain, ticket_id);
+        let put_json = json!(
+            {
+                "status": 4,
+            }
+        );
+        self.delete_ticket_json(ticket_id);
+        requests::ticket_put_request(self.api_key.to_string(), url, put_json);
+    }
 
     fn read_ticket_file(&mut self, ticket_id: i32) -> Value{
         let file_name = format!("{0}.json", ticket_id);

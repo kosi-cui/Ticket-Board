@@ -87,6 +87,12 @@ fn clean_ticket_update() -> Vec<Value> {
   }
 }
 
+#[command]
+fn resolve_ticket(ticket_id: i32, agent_id: i32) {
+  println!("Resolving ticket: {}", ticket_id);
+  let mut api_obj : FreshAPI = api::FreshAPI::new();
+  api_obj.close_ticket(ticket_id, agent_id);
+}
 
 fn main() {
   tauri::Builder::default()
@@ -106,7 +112,8 @@ fn main() {
     close_ticket_task, 
     clean_ticket_update,
     get_credentials,
-    update_credentials
+    update_credentials,
+    resolve_ticket
     ]
   )
   .run(tauri::generate_context!())

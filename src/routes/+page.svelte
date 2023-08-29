@@ -75,7 +75,6 @@
       let output = await invoke("get_credentials")
         .then((creds) =>
         {
-          console.log(creds);
           credentials.set(creds);
         })
         .catch((err) => {
@@ -97,7 +96,6 @@
     let reimagetableComp;
 
     function customListen(event){
-      console.log("Button pressed");
       reimagetableComp.testListen();      
     }
 

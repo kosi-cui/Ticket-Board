@@ -11,8 +11,13 @@
     let selectedTask = "";
     let options = [];
     let originalTask = "";
+    let finished = false;
 
     let dispatch = createEventDispatcher();
+
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
     function updateTicket(){
         id.set(ticket.id);
@@ -38,17 +43,25 @@
     }   
 
     async function closeTask(){
-        if(selectedTask == originalTask)
-            return;
-        Object.entries(Object.values($tasks)).forEach(task => {
-                Object.values(task).forEach(element => {
-                    if(element["title"] != undefined && element["title"] == selectedTask && element["id"] != 0)
-                    {
-                        console.log("Closing tasks up to: " + element["id"]);
-                        invoke("close_ticket_task", {ticketId: $id, taskId: element["id"]});   
-                    }
+        if(selectedTask == originalTask && !finished)
+            return; 
+        if (finished) {
+            console.log("Resolving ticket " + $id);
+            invoke("resolve_ticket", {ticketId: $id, agentId: ticket.agentId});
+        }
+        else
+        {  
+            Object.entries(Object.values($tasks)).forEach(task => {
+                    Object.values(task).forEach(element => {
+                        if(element["title"] != undefined && element["title"] == selectedTask && element["id"] != 0)
+                        {
+                            invoke("close_ticket_task", {ticketId: $id, taskId: element["id"]});
+
+                        }
+                    });
                 });
-            });
+        }
+        await delay(1500);
         dispatch("update");
     }
 
@@ -59,11 +72,12 @@
     $: ticket && updateTicket();
 
     $: updateTrigger && closeTask();
+    $: finished && console.log(finished);
     
 </script>
 
 <tr>
-    <td><input type="checkbox" name= "{$id}-cb" value="check"/></td>
+    <td><input type="checkbox" name= "{$id}-cb" value="check" bind:checked={finished}/></td>
     <td>{$name}</td>
     <td>
         <select bind:value={selectedTask} on:click = "{() => console.log(selectedTask)}">
