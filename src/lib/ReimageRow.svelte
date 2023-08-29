@@ -61,7 +61,7 @@
                     });
                 });
         }
-        await delay(1500);
+        await delay(2000);
         dispatch("update");
     }
 

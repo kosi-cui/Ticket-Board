@@ -88,7 +88,7 @@ fn clean_ticket_update() -> Vec<Value> {
 }
 
 #[command]
-fn resolve_ticket(ticket_id: i32, agent_id: i32) {
+fn resolve_ticket(ticket_id: i32, agent_id: i64) {
   println!("Resolving ticket: {}", ticket_id);
   let mut api_obj : FreshAPI = api::FreshAPI::new();
   api_obj.close_ticket(ticket_id, agent_id);

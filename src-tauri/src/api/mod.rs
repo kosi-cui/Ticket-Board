@@ -17,7 +17,7 @@ pub struct FreshAPI{
     pub domain: String,
     pub xdg_dirs: dirs::XdgDirs,
     pub ticket_ids: Vec<i32>,
-    pub agent_dict: HashMap<i32, String>,
+    pub agent_dict: HashMap<i64, String>,
     pub valid_creds: bool,
 }
 
@@ -100,14 +100,6 @@ impl FreshAPI{
     }
 
 
-    pub fn get_ticket_json(&mut self, id: i32) -> Value {
-        let ticket_url_addition = "/api/v2/tickets/".to_string() + &id.to_string();
-        let url = self.domain.to_string() + &ticket_url_addition;
-        let req = requests::ticket_get_request(self.api_key.to_string(), url);
-        let ticket_json: Value = serde_json::from_value(req).unwrap();
-        ticket_json
-    }
-
     pub fn get_ticket(&mut self, id: i32) -> serde_json::Value {
         let ticket_url_addition = "/api/v2/tickets/".to_string() + &id.to_string();
         let url = self.domain.to_string() + &ticket_url_addition;
@@ -167,20 +159,15 @@ impl FreshAPI{
         let file_path: String = dirs::XdgDirs::append_to_path(&self.xdg_dirs.data_dir, &file_name).into_os_string().into_string().unwrap();
         let tasks: Vec<serde_json::Value> = self.get_tasks(ticket["ticket"]["id"].as_i64().unwrap() as i32);
         
-        let mut agent_id: i32 = 0;
+        let mut agent_id: i64 = 0;
         let mut agent_name: String = String::new();
         if ticket["ticket"]["responder_id"].is_i64() {
-            agent_id = ticket["ticket"]["responder_id"].as_i64().unwrap() as i32;
+            agent_id = ticket["ticket"]["responder_id"].as_i64().unwrap();
             agent_name = self.agent_dict.get(&agent_id).unwrap().to_string();
         }
         else {
             agent_name = "Unassigned".to_string();
         }
-
-        //let agent_id = ticket["ticket"]["responder_id"].as_i64().unwrap() as i32;
-
-        //let agent_name = self.agent_dict.get(&agent_id).unwrap().to_string();
-        
         
         let temp_name = ticket["ticket"]["subject"].to_string();
         let ticket_name: Vec<&str> = temp_name.split(" - ").collect();
@@ -194,7 +181,7 @@ impl FreshAPI{
                 "name": subject,
                 "tasks": tasks,
                 "createdOn": self.parse_raw_date(ticket["ticket"]["created_at"].as_str().unwrap()), 
-                "assignedTo": agent_name, // This line we will need to convert the assigned_id to the Map of the agents in the helpdesk
+                "assignedTo": agent_name, 
             });
         
         // Write the shortened ticket to the file
@@ -291,24 +278,25 @@ impl FreshAPI{
         std::fs::remove_file(file_path).unwrap();
     }
 
-    pub fn clock_labor(&mut self, ticket_id: i32, agent_id: i32) {
+    pub fn clock_labor(&mut self, ticket_id: i32, agent_id: i64) {
         let entry_json: Value = json!(
             {
                 "time_entry" :
                 {
-                    "time_spent": "0:01",
+                    "time_spent": "0:10",
                     "note": "Closed via Reimage Board -- General Labor Clock",
                     "agent_id": agent_id,
                 }
             }
         );
+
+
+
         let url = format!("{0}/api/v2/tickets/{1}/time_entries", self.domain, ticket_id);
-        println!("Clocking labor to ticket: {0} | URL: {1}", ticket_id, url);
         requests::ticket_post_request(self.api_key.to_string(), url, entry_json);
     }
 
-    pub fn close_ticket(&mut self, ticket_id: i32, agent_id: i32) {
-        println!("Agents: {:?}", self.agent_dict);
+    pub fn close_ticket(&mut self, ticket_id: i32, agent_id: i64) {
         // First, we need to clock labor
         self.clock_labor(ticket_id, agent_id);
 
@@ -341,10 +329,9 @@ impl FreshAPI{
         let mut agents = HashMap::new();
         for agent in req["agents"].as_array().unwrap(){
             let agent_name = agent["first_name"].as_str().unwrap().to_string() + " " + agent["last_name"].as_str().unwrap();
-            agents.insert(agent["id"].as_i64().unwrap() as i32, agent_name);
+            agents.insert(agent["id"].as_i64().unwrap(), agent_name);
         }
         self.agent_dict = agents;
     }
-
 
 }

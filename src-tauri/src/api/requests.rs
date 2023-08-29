@@ -26,28 +26,22 @@ pub async fn ticket_get_request(key: String, url: String) -> Value {
 
 #[tokio::main]
 pub async fn ticket_put_request(key: String, url: String, data: Value) {
-    println!("PUT Request: {} | PUT key: {}", url, key);
-    println!("PUT Data: {}", data);
     let client = reqwest::Client::new();
-    let res = client
+    let _ = client
     .put(url)
     .basic_auth(key, Some("X"))
     .json(&data)
     .send()
     .await;
-    println!("PUT Response: {:?}\n\n", res.unwrap().text().await.unwrap());
 }
 
 #[tokio::main]
 pub async fn ticket_post_request(key: String, url: String, data: Value) {
-    println!("POST Request: {} | POST key: {}", url, key);
-    println!("POST Data: {}", data);
     let client = reqwest::Client::new();
-    let response = client
+    let _ = client
     .post(url)
     .basic_auth(key, Some("X"))
     .json(&data)
     .send()
     .await;
-    println!("POST Response: {:?}\n\n", response.unwrap().text().await.unwrap());
 }
