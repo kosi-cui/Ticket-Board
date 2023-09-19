@@ -1,38 +1,19 @@
-# create-svelte
+# Reverse Engineer Reimage Board
+This is an attempt to reverse engineer a tab that displays all current device reimages in Freshservice while also adding functionality to the page.
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+## Technologies Used
+<p>
+  <a href="https://www.rust-lang.org" target="_blank" rel="noreferrer"> <img src="https://rustacean.net/assets/rustacean-flat-noshadow.svg" alt="rust" width="40" height="40"/> </a> 
+  <a href="https://tauri.app/" target="_blank" rel="noreferrer"> <img src="https://tauri-apps.gallerycdn.vsassets.io/extensions/tauri-apps/tauri-vscode/0.2.6/1679072733881/Microsoft.VisualStudio.Services.Icons.Default" alt="Tauri" width="40" height="40"/> </a> 
+  <a href="https://svelte.dev/" target="_blank"> <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Svelte_Logo.svg" alt="Svelte" width="40" height="40"/> </a>
+</p>
 
-## Creating a project
+## Features
+- Only accessible with an API key
+- Refresh tickets hourly
+- Ability to update current step of reimage
+- Ability to close tickets when finished
+- Ability to update several tickets at once
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+## More Info
+I only made this to try out a larger project than just a "Hello World" with Rust and to practice my knowledge of API calls and parsing the data. I don't plan on updating this project or editing any of the default configurations, so if you want to use it yourself you will need to edit those on your own.
