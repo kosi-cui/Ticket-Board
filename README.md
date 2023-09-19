@@ -16,4 +16,5 @@ This is an attempt to reverse engineer a tab that displays all current device re
 - Ability to update several tickets at once
 
 ## More Info
-I only made this to try out a larger project than just a "Hello World" with Rust and to practice my knowledge of API calls and parsing the data. I don't plan on updating this project or editing any of the default configurations, so if you want to use it yourself you will need to edit those on your own.
+- I only made this to try out a larger project than just a "Hello World" with Rust and to practice my knowledge of API calls and parsing the data. I don't plan on updating this project or editing any of the default configurations, so if you want to use it yourself you will need to edit those on your own.
+- I will not be creating any releases since this was just a personal project. If you wanted to download and run the project yourself you will need to install the dependencies for **Tauri and Rust** as well as have a **Freshservice API Key** for the project to run. Without those you cannot build or run the project. :)
