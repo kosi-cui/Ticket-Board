@@ -3,3 +3,5 @@
 .venv/*
 build/*
 *.spec
+*.env
+**/__pycache__/
