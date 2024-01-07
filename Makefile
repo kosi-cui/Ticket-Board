@@ -10,6 +10,7 @@ setup: $(VENV_NAME)\$(SCRIPT_FOLDER)\activate
 
 $(VENV_NAME)\$(SCRIPT_FOLDER)\activate: requirements.txt
 	if not exist $(VENV_NAME) (python -m venv $(VENV_NAME))
+	if not exist $(VENV_NAME)\bin (move /Y $(VENV_NAME)\Scripts $(VENV_NAME)\bin)
 	$(PYTHON) -m pip install -U pip
 	$(PYTHON) -m pip install -r requirements.txt
 
