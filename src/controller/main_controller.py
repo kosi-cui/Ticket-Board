@@ -1,4 +1,4 @@
-from model.config import Config
+from src.model.config import Config
 
 class MainController:
     def __init__(self):

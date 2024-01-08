@@ -1,5 +1,4 @@
 import requests
-import json
 
 class APIAgent:
     def __init__(self, key=None, url=None):
@@ -60,7 +59,7 @@ class APIAgent:
         url = self.url + "/api/v2/tickets/" + str(ticket_id) + ".json"
         response = requests.get(url, auth=(self.key, "X"))
         if response.status_code == 200:
-            self.current_ticket = response.json()["tickets"]
+            self.current_ticket = response.json()["ticket"]
             return response.json()
         elif response.status_code == 404:
             return {"error": "Ticket not found."} 
@@ -102,7 +101,7 @@ class APIAgent:
     # Parsed Data Functions
     @reqTicket
     def getTicketTitle(self):
-        title = self.current_ticket["ticket"]["subject"]
+        title = self.current_ticket["subject"]
         return title
 
 

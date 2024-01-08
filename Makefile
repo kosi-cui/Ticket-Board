@@ -3,7 +3,7 @@ SCRIPT_FOLDER?=bin
 PYTHON=$(VENV_NAME)\$(SCRIPT_FOLDER)\python
 
 run: $(VENV_NAME)\$(SCRIPT_FOLDER)\activate
-	$(PYTHON) src/main.py
+	$(PYTHON) main.py
 
 setup: $(VENV_NAME)\$(SCRIPT_FOLDER)\activate
 	echo "To activate your venv, run: .\$(VENV_NAME)\$(SCRIPT_FOLDER)\activate"
@@ -17,5 +17,5 @@ $(VENV_NAME)\$(SCRIPT_FOLDER)\activate: requirements.txt
 dist:
 	if exist "build" (rmdir /s /q build)
 	if not exist "build" (mkdir build)
-	$(PYTHON) -m PyInstaller --onefile --distpath build src/main.py
+	$(PYTHON) -m PyInstaller --onefile --add-data "src:src" --distpath build main.py
 	del main.spec
