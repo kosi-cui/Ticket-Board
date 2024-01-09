@@ -1,4 +1,8 @@
 from src.model.config import Config
+# TODO: Incorporate the model into the controller. 
+#       The controller should be the only thing that interacts with the model.
+#       The view should only interact with the controller.
+
 
 class MainController:
     def __init__(self):
@@ -17,3 +21,8 @@ class MainController:
     # Public Functions
     def button_function(self):
         print("Button Pressed")
+
+    def printReimageTickets(self):
+        for ticket in self.config.api_agent.filtered_ticket_list:
+            if "subject" in ticket:
+                print(f"#INC-{ticket["id"]}: {ticket["subject"]}")

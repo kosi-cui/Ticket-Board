@@ -74,8 +74,8 @@ class APIAgent:
         url = self.url + f'/api/v2/tickets/filter?query={filter}'
         response = requests.get(url, auth=(self.key, "X"))
         if response.status_code == 200:
-            self.filtered_ticket_list = response.json()
-            return response.json()
+            self.filtered_ticket_list = response.json()["tickets"]
+            return response.json()["tickets"]
         elif response.status_code == 404:
             return {"error": "Filter not found."}
 

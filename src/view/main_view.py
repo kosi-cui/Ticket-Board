@@ -1,8 +1,11 @@
 from customtkinter import *
 from src.controller.main_controller import MainController
+import os
+from dotenv import load_dotenv
 
 class MainView:
     def __init__(self):
+        load_dotenv("../../.env")
         self.controller = MainController()
         self.root = None
         self.appSetup()

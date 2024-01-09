@@ -27,6 +27,7 @@ class Config:
         return self.api_agent.valid_user
     
 
+
     # Getters
     def getCurrentTicket(self) -> dict:
         return self.api_agent.current_ticket

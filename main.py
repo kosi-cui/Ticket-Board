@@ -8,6 +8,9 @@ elif __file__:
     application_path = os.path.dirname(__file__)
 sys.path.append(os.path.join(application_path, 'src'))
 
+
+
+# Run the application & Import the view
 from src.view.main_view import MainView
 
 if __name__ == "__main__":
