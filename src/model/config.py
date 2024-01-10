@@ -3,8 +3,9 @@ from src.model.api_agent import APIAgent
 class Config:
     def __init__(self):
         self.title = "ReimageBoard"
-        self.geometry = "400x240"
+        self.geometry = "1280x720"
         self.bg_color = "white"
+        self.ac_color = "#004c23"
         self.api_agent = APIAgent()
     
 

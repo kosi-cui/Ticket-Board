@@ -1,4 +1,4 @@
-from src.model.config import Config
+from src.model.main_model import MainModel
 # TODO: Incorporate the model into the controller. 
 #       The controller should be the only thing that interacts with the model.
 #       The view should only interact with the controller.
@@ -6,23 +6,29 @@ from src.model.config import Config
 
 class MainController:
     def __init__(self):
-        self.config = Config()
-
+        self.data = MainModel()
 
     # Getters
     def getTitle(self):
-        return self.config.title
+        return self.data.config.title
     def getGeometry(self):
-        return self.config.geometry
+        return self.data.config.geometry
     def getBgColor(self):
-        return self.config.bg_color
+        return self.data.config.bg_color
+    def getAcColor(self):
+        return self.data.config.ac_color
+
+    # Setters
+    def logIn(self, key, url):
+        return self.data.config.logIn(key, url)
+
+    def changeAPIUser(self, key):
+        return self.data.config.changeAPIUser(key)
+
+    def changeAPIUrl(self, url):
+        return self.data.config.changeAPIUrl(url)   
     
 
-    # Public Functions
+    # Functions
     def button_function(self):
-        print("Button Pressed")
-
-    def printReimageTickets(self):
-        for ticket in self.config.api_agent.filtered_ticket_list:
-            if "subject" in ticket:
-                print(f"#INC-{ticket["id"]}: {ticket["subject"]}")
+        print("Hello World!")
