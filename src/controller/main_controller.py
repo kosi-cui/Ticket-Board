@@ -17,6 +17,8 @@ class MainController:
         return self.data.config.bg_color
     def getAcColor(self):
         return self.data.config.ac_color
+    def getReimageTickets(self):
+        return self.prepTicketData()
 
     # Setters
     def logIn(self, key, url):
@@ -28,7 +30,21 @@ class MainController:
     def changeAPIUrl(self, url):
         return self.data.config.changeAPIUrl(url)   
     
+    
 
     # Functions
     def button_function(self):
         print("Hello World!")
+
+    def prepTicketData(self):
+        data = self.data.config.api_agent.filteredTicketGetRequest("tag:Reimage")
+        print(data)
+        parsed_data = [(ticket["id"], self.parseDeviceName(ticket["subject"]), "Decrypt Bitlocker", ticket["responder_id"]) for ticket in data]
+        return parsed_data
+
+    def parseDeviceName(self, subject):
+        start = subject.find(" - ")
+        end = subject.find(" - ", start + 1)
+        if end == -1:
+            end = len(subject)
+        return subject[start + 3:end]

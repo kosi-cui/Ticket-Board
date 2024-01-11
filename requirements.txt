@@ -4,4 +4,3 @@ requests
 pyinstaller
 pytest
 python-dotenv
-ctktable
