@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 
 class Config:
     def __init__(self):
+        dotenv_path = os.path.join(os.path.dirname(__file__), '../../.env')
+        load_dotenv(dotenv_path)
         self.title = "ReimageBoard"
         self.geometry = "1280x720"
         self.bg_color = "white"
@@ -29,8 +31,8 @@ class Config:
         return self.api_agent.valid_user
 
     def updateAgentDict(self):
-        load_dotenv("../../.env")
         it_group_id = os.getenv("IT_GROUP_ID")  
+        print(it_group_id)
         agent_ids = self.api_agent.getGroupUsers(it_group_id)
         self.api_agent.getAllUsers()
         agent_names = [self.api_agent.getUser(agent_id) for agent_id in agent_ids]

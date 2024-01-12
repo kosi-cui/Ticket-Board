@@ -11,6 +11,7 @@ class MainView:
         self.controller = MainController()
         user = os.getenv("API_KEY")
         url = os.getenv("HELPDESK_URL")
+        print(user, url)
         self.controller.logIn(user, url)
         #TODO: Have a controller.loadConfig() function that loads the config from a file
         self.root = None
