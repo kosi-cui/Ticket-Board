@@ -14,7 +14,7 @@ class TicketBoard():
             fg_color="blue",
             corner_radius=0
         )
-        self.board_width = int(self.root.winfo_width() * 0.84 / 3.25)
+        self.board_width = int(self.root.winfo_width() * 0.84 / 3.5)
         self.board_height = int(self.root.winfo_height() * 0.8 / 20)
         self.frame.place(relx = 0.16, rely = 0.2, relwidth = 0.84, relheight = 0.8)
         

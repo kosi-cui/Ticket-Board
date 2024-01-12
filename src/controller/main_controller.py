@@ -33,13 +33,10 @@ class MainController:
     
 
     # Functions
-    def button_function(self):
-        print("Hello World!")
-
     def prepTicketData(self):
+        self.data.config.updateAgentDict()
         data = self.data.config.api_agent.filteredTicketGetRequest("tag:Reimage")
-        print(data)
-        parsed_data = [(ticket["id"], self.parseDeviceName(ticket["subject"]), "Decrypt Bitlocker", ticket["responder_id"]) for ticket in data]
+        parsed_data = [(ticket["id"], self.parseDeviceName(ticket["subject"]), "Decrypt Bitlocker", self.parseAgentId(ticket["responder_id"])) for ticket in data]
         return parsed_data
 
     def parseDeviceName(self, subject):
@@ -48,3 +45,6 @@ class MainController:
         if end == -1:
             end = len(subject)
         return subject[start + 3:end]
+    
+    def parseAgentId(self, agent_id):
+        return self.data.config.agent_dict[agent_id]

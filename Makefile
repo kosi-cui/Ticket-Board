@@ -2,7 +2,10 @@ VENV_NAME?=.venv
 SCRIPT_FOLDER?=bin
 PYTHON=$(VENV_NAME)\$(SCRIPT_FOLDER)\python
 
-run: $(VENV_NAME)\$(SCRIPT_FOLDER)\activate
+
+all: run
+
+run: 
 	$(PYTHON) main.py
 
 setup: $(VENV_NAME)\$(SCRIPT_FOLDER)\activate
