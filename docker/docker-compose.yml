@@ -1,0 +1,31 @@
+version: '3'
+services:
+  web:
+    user: root
+    build: .
+    ports:
+      - "80:5000"
+    depends_on:
+      - db
+    develop:
+      watch:
+        - action: sync
+          path: ./app
+          target: /app
+        - action: rebuild
+          path: .
+          dockerfile: Dockerfile
+          target: web
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: my_database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+volumes:
+  db_data:
