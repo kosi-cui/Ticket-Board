@@ -1,8 +1,1 @@
-.pytest_cache/*
-.vscode/*
-.venv/*
-build/*
-*.spec
-*.env
-**/__pycache__/
-scripts/*.json
+.env

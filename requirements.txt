@@ -1,6 +1,3 @@
-customtkinter
-packaging
+flask
 requests
-pyinstaller
-pytest
 python-dotenv

@@ -1,31 +1,12 @@
 version: '3'
 services:
-  web:
-    user: root
-    build: .
+  ticket-board:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: ticket-board
+    container_name: CUI-Tickets
     ports:
-      - "80:5000"
-    depends_on:
-      - db
-    develop:
-      watch:
-        - action: sync
-          path: ./app
-          target: /app
-        - action: rebuild
-          path: .
-          dockerfile: Dockerfile
-          target: web
-  db:
-    image: mysql:5.7
-    environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: my_database
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      - "5000:5000"
     volumes:
-      - db_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
-volumes:
-  db_data:
+      - .:/app

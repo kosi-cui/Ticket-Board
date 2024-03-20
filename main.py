@@ -1,18 +1,91 @@
-import sys
+from flask import Flask, send_from_directory, request
 import os
-
-# Add the src directory of the packaged executable to the Python path
-if getattr(sys, 'frozen', False):
-    application_path = os.path.dirname(sys.executable)
-elif __file__:
-    application_path = os.path.dirname(__file__)
-sys.path.append(os.path.join(application_path, 'src'))
-
+import subprocess
+import unittest
+import argparse
+import requests
+from dotenv import load_dotenv
+from server import api_page as api
 
 
-# Run the application & Import the view
-from src.view.main_view import MainView
 
-if __name__ == "__main__":
-    mainView = MainView()
-    mainView.runApp()
+app = Flask(__name__)
+
+@app.route('/')
+def base():
+    return send_from_directory('client/public', 'index.html')
+
+@app.route('/check_credentials')
+def check_credentials():
+    if not os.path.exists('.env') or not validCredentials():
+        return 'Invalid credentials', 401
+    return 'Valid credentials'
+
+# Credential Check
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        data = request.get_json()
+        api_key = data.get('api_key')
+        url = data.get('url')
+
+        with open('.env', 'w') as f:
+            f.write(f'API_KEY="{api_key}"\n')
+            f.write(f'HELPDESK_URL="{url}"\n')
+
+        return 'Credentials saved.'
+    else:
+        return send_from_directory('client/public', 'index.html')
+
+# Path for all static files (Compiled JS, CSS, images, etc.)
+@app.route('/<path:path>')
+def home(path):
+    return send_from_directory('client/public', path)
+
+# API Routes
+@app.route('/api/ticket/<int:ticket_id>')
+def api_req(ticket_id):
+    return api.ticket_get(ticket_id)
+
+
+# Main
+def validCredentials():
+    """
+    Checks if the .env file exists and if the credentials are valid.
+    """
+    if not os.path.exists('.env'):
+        return False
+
+    load_dotenv()  # take environment variables from .env.
+    api_key = os.getenv('API_KEY')
+    helpdesk_url = os.getenv('HELPDESK_URL')
+    url = helpdesk_url + '/api/v2/tickets.json'
+    response = requests.get(url, auth=(api_key, "X"))
+    return response.status_code == 200    
+
+
+def run():
+    # Check if the script is running inside a Docker container
+    if not os.path.exists('/.dockerenv'):
+        # If not, navigate to the client directory and run "npm run build"
+        os.chdir('client')
+        subprocess.run('npm run build', shell=True, check=True)
+        # Navigate back to the previous directory
+        os.chdir('..')
+    app.run(host='0.0.0.0', port=5000, debug=True)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-t', '--test', action='store_true', help='Run unit tests')
+    args = parser.parse_args()
+
+    if args.test:
+        # Discover and run tests
+        loader = unittest.TestLoader()
+        start_dir = 'server/tests'
+        suite = loader.discover(start_dir)
+
+        runner = unittest.TextTestRunner()
+        runner.run(suite)
+    else:
+        run()
