@@ -1,8 +1,8 @@
 <script>
     import { Router, Route, navigate } from 'svelte-routing';
-    import Login from './Login.svelte';
-    import Home from './Home.svelte';
-    import Loading from './Loading.svelte';
+    import Login from './pages/+Login.svelte';
+    import Home from './pages/+Home.svelte';
+    import Loading from './pages/+Loading.svelte';
 
     fetch('/check_credentials')
         .then(response => {
@@ -12,7 +12,6 @@
                 navigate('/login');
             }
         });
-
 </script>
 
 <Router>

@@ -1,7 +1,3 @@
-<script>
-    // You can add any logic you want here, like a countdown or progress bar
-</script>
-
 <style>
     .loading-container {
         display: flex;

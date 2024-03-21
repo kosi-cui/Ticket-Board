@@ -6,6 +6,7 @@ import argparse
 import requests
 from dotenv import load_dotenv
 from server import api_page as api
+from server import settings
 
 
 
@@ -67,11 +68,14 @@ def validCredentials():
 def run():
     # Check if the script is running inside a Docker container
     if not os.path.exists('/.dockerenv'):
+        # Update the styling in the Svelte files
+        settings.replace_to_color()
         # If not, navigate to the client directory and run "npm run build"
         os.chdir('client')
         subprocess.run('npm run build', shell=True, check=True)
         # Navigate back to the previous directory
         os.chdir('..')
+        settings.return_to_original()
     app.run(host='0.0.0.0', port=5000, debug=True)
 
 if __name__ == '__main__':
