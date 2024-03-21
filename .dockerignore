@@ -1,0 +1,10 @@
+server/tests
+.vscode/
+README.md
+docker/Dockerfile
+docker/docker-compose.yml
+.env
+.dockerignore
+.git/
+.gitignore
+tickets/*
