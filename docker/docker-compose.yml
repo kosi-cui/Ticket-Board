@@ -2,11 +2,9 @@ version: '3'
 services:
   ticket-board:
     build: 
-      context: .
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: docker/Dockerfile
     image: ticket-board
-    container_name: CUI-Tickets
+    container_name: TicketBoard
     ports:
       - "5000:5000"
-    volumes:
-      - .:/app
