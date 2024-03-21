@@ -1,5 +1,5 @@
 import unittest
-from server.api_page import clean_string, reimage_ticket
+from server.api_page import clean_string, reimage_ticket, get_all_reimage_tickets
 from server.agent import Agent
 from dotenv import load_dotenv
 import os
@@ -34,3 +34,11 @@ class TestApiPage(unittest.TestCase):
         print(f'Actual output: {actual}')
         print("=-=-=-=-=-=-=-=-=-=-\n")
         self.assertDictEqual(actual, expected)
+
+    def test_reimage_tickets(self):
+        actual = get_all_reimage_tickets()
+        print("=-=-=-=-=-=-=-=-=-=-")
+        print(f'Testing function: reimage_tickets')
+        print(f'Actual output: {len(actual)}')
+        print("=-=-=-=-=-=-=-=-=-=-\n")
+        self.assertIsInstance(actual, list)

@@ -5,7 +5,7 @@ import os
 import re
 
 
-def reimage_tickets():
+def get_all_reimage_tickets():
     """
     Returns a list of all the tickets that have the tag "Reimage".
     """
@@ -15,10 +15,14 @@ def reimage_tickets():
     key = os.getenv("API_KEY")
     url = os.getenv("HELPDESK_URL")
     requester = Agent(key, url)
-
-    # TODO: Use the requester filteredTicketGetRequest method to get the reimage tickets
-    #      and append them to the output list. Then format the output
-    # tickets = requester.filteredTicketGetRequest("tag:Reimage")
+    output_raw = requester.filteredTicketGetRequest("tag:Reimage%20AND%20status:<4")
+    for ticket in output_raw:
+        curr_ticket = {}
+        curr_ticket["title"] = f"#{ticket["id"]} - {format_title(ticket["subject"])}"
+        curr_ticket["agent"] = requester.getUser(ticket["responder_id"])
+        curr_ticket["created_at"] = format_date(ticket["created_at"])
+        curr_ticket["tasks"] = get_tasks(ticket["id"], requester)
+        output.append(curr_ticket)
     return output
 
 

@@ -47,6 +47,10 @@ def home(path):
 def api_req(ticket_id):
     return api.ticket_get(ticket_id)
 
+@app.route('/api/reimage_tickets')
+def reimage_tickets():
+    return api.get_all_reimage_tickets()
+
 
 # Main
 def validCredentials():

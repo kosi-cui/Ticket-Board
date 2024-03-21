@@ -1,20 +1,21 @@
-# Reverse Engineer Reimage Board
-This is an attempt to reverse engineer a tab that displays all current device reimages in Freshservice while also adding functionality to the page.
+# 💻 Revamped Freshservice Reimage Board
+This is a project that is being made in order to streamline the reimage process within an IT Office that utilizes the Freshservice Ticketing infrastructure. With connections to the Freshservice API, this reimage board plans to make adding, completing, and updating reimage tickets a breeze!
 
 ## Technologies Used
 <p>
-  <a href="https://www.rust-lang.org" target="_blank" rel="noreferrer"> <img src="https://rustacean.net/assets/rustacean-flat-noshadow.svg" alt="rust" width="40" height="40"/> </a> 
-  <a href="https://tauri.app/" target="_blank" rel="noreferrer"> <img src="https://tauri-apps.gallerycdn.vsassets.io/extensions/tauri-apps/tauri-vscode/0.2.6/1679072733881/Microsoft.VisualStudio.Services.Icons.Default" alt="Tauri" width="40" height="40"/> </a> 
+  <a href="https://www.python.org/" target="_blank" rel="noreferrer"> <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" alt="python" width="40" height="40"/> </a> 
+  <a href="https://flask.palletsprojects.com/en/3.0.x/" target="_blank" rel="noreferrer"> <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Flask_logo.svg" alt="Flask" width="80" height="40"/> </a> 
   <a href="https://svelte.dev/" target="_blank"> <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Svelte_Logo.svg" alt="Svelte" width="40" height="40"/> </a>
+  <a href="https://docker.com/" target="_blank"> <img src="https://www.svgrepo.com/show/349342/docker.svg" alt="Docker" width="40" height="40"/> </a>
+
 </p>
 
 ## Features
 - Only accessible with an API key
-- Refresh tickets hourly
+- Configuration File to change colors and ticket refresh timing
 - Ability to update current step of reimage
 - Ability to close tickets when finished
 - Ability to update several tickets at once
 
 ## More Info
-- I only made this to try out a larger project than just a "Hello World" with Rust and to practice my knowledge of API calls and parsing the data. I don't plan on updating this project or editing any of the default configurations, so if you want to use it yourself you will need to edit those on your own.
-- I will not be creating any releases since this was just a personal project. If you wanted to download and run the project yourself you will need to install the dependencies for **Tauri and Rust** as well as have a **Freshservice API Key** for the project to run. Without those you cannot build or run the project. :)
+> I'll update this README when the project is more finished. Including picutures and further instructions on how to customize & deploy the application.

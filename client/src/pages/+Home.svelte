@@ -1,19 +1,12 @@
 <script>
+	import { onMount } from 'svelte';
 	// Component Imports
 	import Sidebar from "../components/Sidebar.svelte";
 	import TicketTable from "../components/TicketTable.svelte";
 
 	// Globals
-	let ticket_num = '30412';
 	let tickets = [];
-
-	function fetchTicket(ticket_number) {
-		return fetch('/api/ticket/' + ticket_number)
-			.then(r => r.json())
-			.then(result => {
-				return result;
-		});
-	}
+	let loading = true;
 
 	function addTicket() {
 		fetchTicket(ticket_num).then(ticket => {
@@ -38,6 +31,19 @@
 			console.log(tickets);
 		});
 	}
+
+	async function reimageTickets() {
+		const response = await fetch('/api/reimage_tickets');
+		const result = await response.json();
+		tickets = result;
+		loading = false;
+		console.log(tickets);
+	}
+
+	// Run on page load
+	onMount(() => {
+		reimageTickets();
+	});
 </script>
 
 <style>
@@ -51,10 +57,9 @@
 
 <Sidebar topImage="" bottomImage="" />
 <div class="content">
-	<p> Ticket Number: </p>
-	<br>
-	<input type="text" bind:value={ticket_num} />
-	<button on:click={addTicket}>Fetch Ticket</button>
-	<br>
-	<TicketTable {tickets} />
+	{#if loading}
+		<h1>Loading...</h1>
+	{:else}
+		<TicketTable {tickets} />
+	{/if}
 </div>
