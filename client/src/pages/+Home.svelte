@@ -43,8 +43,8 @@
 <style>
     .content {
         position: absolute;
-        left: 5%;
-        width: 95%;
+        left: 5.1%;
+        width: 94.9%;
         height: 100vh;
     }
 </style>
